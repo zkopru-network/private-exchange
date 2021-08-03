@@ -2,6 +2,10 @@
 
 This document provides a architectural overview of **Private Exchange**. Explaining technology stack, usecases and system architecture.
 
+## System architecture
+
+![System architecture](./assets/zk_private_exchange_overview.jpg)
+
 ## Technology stack
 
 Private exchange consists of 3 main funtionalities. Order advertisement and private matching, peer finding and atomic swap. We use Peek a book, blind-find, SMP and ZKOPRU for each functionalities.
@@ -33,10 +37,6 @@ By utilizing zkopru atomic swap, two parties can swap their assets without revea
 
 Detailed explanation can be found here.
 [zkopru atomic swap](https://docs.zkopru.network/how-it-works/atomic-swap)
-
-## System architecture
-
-![System architecture](./assets/zk_private_exchange_overview.jpg)
 
 ## Use Cases diagram
 
