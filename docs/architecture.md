@@ -36,6 +36,8 @@ Detailed explanation can be found here.
 
 ## System architecture
 
+![System architecture](./assets/zk_private_exchange_overview.jpg)
+
 ## Use Cases diagram
 
 Use cases of Private exchange system includes.
