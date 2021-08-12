@@ -94,6 +94,12 @@ When the order matching succeeded, two parties have to execute atomic swap with 
 
 Users can view their exchange history in the history page.
 
+## User flow
+
+![advertise flow](./assets/advertise_flow.jpg)
+![search alice flow](./assets/search_alice_flow.jpg)
+![take order flow](./assets/take_order_flow.jpg)
+
 ## Future work
 
 - Blind-find update eliminating hubs
