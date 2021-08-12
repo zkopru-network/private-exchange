@@ -38,6 +38,13 @@ By utilizing zkopru atomic swap, two parties can swap their assets without revea
 Detailed explanation can be found here.
 [zkopru atomic swap](https://docs.zkopru.network/how-it-works/atomic-swap)
 
+### Frontend stack
+
+- React
+- Typescript
+- styled-components
+- ethers.js
+
 ## Use Cases diagram
 
 Use cases of Private exchange system includes.
@@ -57,16 +64,37 @@ Through these use cases, users can exchange their assets without revealing any i
 
 Everything starts from posting orders. Anyone who wants to exchange any pair can post advertisement to peek-a-book contract if the pair doesn't exist on the order book yet. Advertisement data structure includes `pair`, `sell_or_buy`, `amount` and `identity` fields. Peek-a-book contract stores list of all the advertisements posted, and users can lookup the posted ads.
 
+```
+type Advertisement {
+	identity
+	pair
+	sell_or_buy
+	amount
+}
+```
+
 ### Search order ads
 
-Order taker search order ads posted on peek-a-book contract. Private exchange app list all the ads on UI. Users can filter and sort the ads by `pair`, `sell_or_buy` and `amount`. User can get the information to connect to the advertiser via blind-find network e.g. peer_id, IP address.
+Order taker search order ads posted on peek-a-book contract. Private exchange app list all the ads on UI and users can filter and sort the ads list by `pair`, `sell_or_buy` and `amount`. User will get the information to connect to the advertiser via blind-find network e.g. peer_id, IP address.
+Notice that users cannot search advertisement with pair price. Pair price matching will be executed after connecting to the advertiser using blind-find.
 
 ### Find/Connect peer
 
-Order take initiates peer finding to connect to advertiser after searching ads.
+Order taker initiates peer finding to connect to advertiser after searching ads. Before initiating peer finding, users have to join blind-find network by requesting to blind-find hub (as of blind-find v1.5. This process can be done permissionlessly in the near future). User can search advertiser peer by asking the blind-find hub using the information they got in search order ads phase. If they successfully finds the peer, they can immediately establish connection with the advertiser in p2p manner. While these process, no other parties than the order taker and advertiser learn anything.
 
 ### Execute private order matching
 
+After p2p connection is successfully established, private order matching protocol is executed. Socialist Millionair Protocol (SMP) is used as the private order matching protocol. Using this protocol, two parties test if the price of the pair both are expecting matches or not. They will never learn anything more than the fact that the price matches or not including the expecting price of the counterparty. If the price does not match, two parties disconnect the p2p connection and finish the protocol. If the price matches, they proceed to atomic swap phase. Note that the protocol succeed only when excat price matches. Since this limitation is unpleasant in terms of UX, to remove this limitation is highly prioritized in the future development.
+
 ### Execute atomic swap
 
+When the order matching succeeded, two parties have to execute atomic swap with the matched price. Exchange amount is smaller amount of the two. Before executing atomic swap on zkopru, the two parties have to have their exchanging assets in zkopru by depositing them from L1 or received from others directly in L2. Then the two parties submit atomic swap tx to zkopru coordinator. Anyone including zkopru coordinator will not know the content of the swap thanks to zkopru.
+
 ### View History
+
+Users can view their exchange history in the history page.
+
+## Future work
+
+- Blind-find update eliminating hubs
+- Better price matching
