@@ -20,11 +20,16 @@ $ yarn
 $ npm i
 ```
 
+### Setup peek-a-book contract in docker
+
+```bash
+$ npm run docker:build
+$ npm run docker:Start
+```
+
 ### Start blind-find network in docker:
 
-```
-$ docker compose up
-```
+TBD
 
 ### Start zkopru coordinator locally:
 
@@ -34,4 +39,6 @@ Follow instruction [here](https://docs.zkopru.network/getting-started/configure-
 
 ```bash
 $ yarn start
+# or if you prefer npm
+$ npm start
 ```

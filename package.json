@@ -20,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker:build": "docker build -t ganache -f dockerfiles/Dockerfile .",
+    "docker:start": "docker run -p 8545:8545 ganache"
   },
   "eslintConfig": {
     "extends": [
