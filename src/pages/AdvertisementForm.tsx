@@ -1,12 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useAdvertiseMutation } from '../hooks/advertisement'
 import PrimaryButton from '../components/PrimaryButton'
+import Title from '../components/Title'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import tokens from '../tokenlist'
-import { useState } from 'react'
 
 type FormData = {
   currency1: string
@@ -40,68 +40,83 @@ const AdvertisementForm = () => {
 
   return (
     <Container>
-      <form onSubmit={onSubmit}>
-        <FormControl>
-          <Label>Currency 1</Label>
-          {/* TODO: use token select dropdown */}
-          <Input
-            {...register('currency1', {
-              required: 'This field is required',
-              validate: {
-                tokenExist: (value) =>
-                  tokens.findIndex((v) => v.symbol === value) !== -1 ||
-                  'Invalid token'
-              }
-            })}
-            error={!!errors.currency1}
-          />
-          <ErrorMessage>{errors.currency1?.message || ''}</ErrorMessage>
-        </FormControl>
+      <Title>Create Advertisement</Title>
+      <FormContainer>
+        <form onSubmit={onSubmit}>
+          <FormControl>
+            <Label>Currency 1</Label>
+            {/* TODO: use token select dropdown */}
+            <Input
+              {...register('currency1', {
+                required: 'This field is required',
+                validate: {
+                  tokenExist: (value) =>
+                    tokens.findIndex((v) => v.symbol === value) !== -1 ||
+                    'Invalid token'
+                }
+              })}
+              error={!!errors.currency1}
+            />
+            <ErrorMessage>{errors.currency1?.message || ''}</ErrorMessage>
+          </FormControl>
 
-        <FormControl>
-          <Label>Currency 2</Label>
-          {/* TODO: use token select dropdown */}
-          <Input
-            {...register('currency2', {
-              required: 'This field is required',
-              validate: {
-                tokenExist: (value) =>
-                  tokens.findIndex((v) => v.symbol === value) !== -1 ||
-                  'Invalid token'
-              }
-            })}
-            error={!!errors.currency2}
-          />
-          <ErrorMessage>{errors.currency2?.message || ''}</ErrorMessage>
-        </FormControl>
+          <FormControl>
+            <Label>Currency 2</Label>
+            {/* TODO: use token select dropdown */}
+            <Input
+              {...register('currency2', {
+                required: 'This field is required',
+                validate: {
+                  tokenExist: (value) =>
+                    tokens.findIndex((v) => v.symbol === value) !== -1 ||
+                    'Invalid token'
+                }
+              })}
+              error={!!errors.currency2}
+            />
+            <ErrorMessage>{errors.currency2?.message || ''}</ErrorMessage>
+          </FormControl>
 
-        <FormControl>
-          <Label>Amount</Label>
-          <Input
-            {...register('amount', { required: 'This field is required' })}
-            placeholder="0.0"
-            error={!!errors.amount}
-          />
-          <ErrorMessage>{errors.amount?.message || ''}</ErrorMessage>
-        </FormControl>
+          <FormControl>
+            <Label>Amount</Label>
+            <Input
+              {...register('amount', { required: 'This field is required' })}
+              placeholder="0.0"
+              error={!!errors.amount}
+            />
+            <ErrorMessage>{errors.amount?.message || ''}</ErrorMessage>
+          </FormControl>
 
-        {submitting ? (
-          <PrimaryButton disabled>Submitting...</PrimaryButton>
-        ) : (
-          <PrimaryButton>Create Advertisement</PrimaryButton>
-        )}
-      </form>
+          {submitting ? (
+            <PrimaryButton disabled>Submitting...</PrimaryButton>
+          ) : (
+            <PrimaryButton>Create Advertisement</PrimaryButton>
+          )}
+        </form>
+      </FormContainer>
     </Container>
   )
 }
 
 const Container = styled.div`
-  padding: 20px 40px;
+  padding: ${SPACE.XL} ${SPACE.XXL};
+`
+
+const FormContainer = styled.div`
+  background-color: ${({ theme }) => theme.surface};
+  color: ${({ theme }) => theme.onSurface};
+  box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
+  border-radius: ${RADIUS.M};
+  padding: ${SPACE.M};
 `
 
 const FormControl = styled.div`
   width: 100%;
   margin: ${SPACE.M} 0px;
+
+  &:first-child {
+    margin-top: 0;
+  }
 `
 
 const Input = styled.input<{ error?: boolean }>`
@@ -115,6 +130,7 @@ const Input = styled.input<{ error?: boolean }>`
 const Label = styled.label`
   display: block;
   font-size: ${FONT_SIZE.S};
+  font-weight: 600;
   color: ${({ theme }) => theme.onBackground};
   margin-bottom: ${SPACE.XS};
 `

@@ -12,7 +12,8 @@ const SPACE = {
   S: '8px',
   M: '16px',
   L: '20px',
-  XL: '24px'
+  XL: '24px',
+  XXL: '32px'
 } as const
 
 const RADIUS = {
