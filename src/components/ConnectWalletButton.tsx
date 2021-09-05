@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 import { useWeb3React } from '@web3-react/core'
 
 import { injected } from '../connectors'
@@ -8,16 +9,20 @@ const ConnectWalletButton = ({ text }: { text?: string }) => {
   const { activate } = useWeb3React()
 
   return (
-    <PrimaryButton
+    <Button
       type="button"
       onClick={() => {
-        console.log('hi')
         activate(injected)
       }}
     >
       {text ? text : 'Connect Wallet'}
-    </PrimaryButton>
+    </Button>
   )
 }
+
+const Button = styled(PrimaryButton)`
+  background-color: ${({ theme }) => theme.surface};
+  color: ${({ theme }) => theme.onSurface};
+`
 
 export default ConnectWalletButton

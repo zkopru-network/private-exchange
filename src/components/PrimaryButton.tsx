@@ -2,8 +2,8 @@ import styled from 'styled-components'
 import { FONT_SIZE, SPACE, RADIUS } from '../constants'
 
 const PrimaryButton = styled.button`
-  background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
+  background-color: ${({ theme }) => theme.primary};
+  color: ${({ theme }) => theme.onPrimary};
   font-size: ${FONT_SIZE.S};
   padding: ${SPACE.S} ${SPACE.M};
   margin-right: ${SPACE.M};

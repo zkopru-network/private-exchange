@@ -21,6 +21,9 @@ input::-webkit-inner-spin-button {
 input:invalid {
   box-shadow: none;
 }
+input:focus {
+  outline: none;
+}
 a {
   color: inherit;
   text-decoration: none;

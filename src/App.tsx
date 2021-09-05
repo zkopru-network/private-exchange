@@ -7,6 +7,7 @@ import AdvertisementForm from './pages/AdvertisementForm'
 import GlobalStyle from './styles/global'
 import { useEagerConnect } from './hooks/wallet'
 import LoadingSpinner from './components/LoadingSpinner'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
   const tried = useEagerConnect()
@@ -25,6 +26,7 @@ function App() {
           <AdvertisementForm />
         </Route>
       </Switch>
+      <Toaster />
     </>
   )
 }
