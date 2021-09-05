@@ -7,7 +7,7 @@ body {
   font-size: ${FONT_SIZE.M};
   color: ${({ theme }) => theme.onBackground};
   margin: 0;
-  min-width: 100vh;
+  min-width: 100vw;
   background-color: ${({ theme }) => theme.background}
 }
 input {

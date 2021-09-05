@@ -1,0 +1,16 @@
+import styled from 'styled-components'
+import { FONT_SIZE, SPACE, RADIUS } from '../constants'
+
+const PrimaryButton = styled.button`
+  background-color: ${({ theme }) => theme.surface};
+  color: ${({ theme }) => theme.onSurface};
+  font-size: ${FONT_SIZE.S};
+  padding: ${SPACE.S} ${SPACE.M};
+  margin-right: ${SPACE.M};
+  border-radius: ${RADIUS.L};
+  border: none;
+  box-shadow: 0px 1px 4px ${({ theme }) => theme.shadow};
+  cursor: pointer;
+`
+
+export default PrimaryButton
