@@ -10,18 +10,31 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@web3-react/core": "^6.1.9",
+    "@web3-react/injected-connector": "^6.0.7",
+    "@web3-react/network-connector": "^6.1.9",
+    "ethers": "^5.4.6",
+    "fuse.js": "^6.4.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.14.2",
+    "react-hot-toast": "^2.1.1",
+    "react-query": "^3.21.1",
     "react-scripts": "4.0.3",
+    "react-select": "^4.3.1",
+    "styled-components": "^5.3.1",
     "typescript": "^4.1.2",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "wouter": "^2.7.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker:build": "docker build -t ganache -f dockerfiles/Dockerfile .",
+    "bootstrap": "npm run docker:build && npm run docker:cp-address",
+    "docker:build": "docker build -t ganache --progress plain -f dockerfiles/Dockerfile .",
+    "docker:cp-address": "docker cp $(docker create ganache):/HOME/peek-a-book/address.json ./src/address.json",
     "docker:start": "docker run -p 8545:8545 ganache"
   },
   "eslintConfig": {
@@ -41,5 +54,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-select": "^4.0.17",
+    "@types/styled-components": "^5.1.13"
   }
 }
