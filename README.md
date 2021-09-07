@@ -20,16 +20,12 @@ $ yarn
 $ npm i
 ```
 
-### Setup peek-a-book contract in docker
+### Setup docker environment
 
 ```bash
-$ npm run docker:build
-$ npm run docker:Start
+$ npm run docker:bootstrap
+$ npm run docker:start
 ```
-
-### Start blind-find network in docker:
-
-TBD
 
 ### Start zkopru coordinator locally:
 
