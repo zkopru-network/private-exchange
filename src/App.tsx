@@ -22,7 +22,7 @@ function App() {
         <Route path="/">
           <AdvertisementList />
         </Route>
-        <Route path="/advertisement">
+        <Route path="/advertise">
           <AdvertisementForm />
         </Route>
       </Switch>

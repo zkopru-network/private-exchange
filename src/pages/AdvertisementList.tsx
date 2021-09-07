@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Link } from 'wouter'
 import Title from '../components/Title'
 import PrimaryButton from '../components/PrimaryButton'
 import { RADIUS, SPACE } from '../constants'
@@ -14,7 +15,10 @@ const AdvertisementList = () => {
 
   return (
     <Container>
-      <Title>Advertisement List</Title>
+      <PageHead>
+        <Title>Advertisement List</Title>
+        <HeadLink href="/advertise">+ CREATE</HeadLink>
+      </PageHead>
       <Table>
         <HeadRow>
           <HeadCell>Pair</HeadCell>
@@ -46,6 +50,17 @@ const AdvertisementList = () => {
 
 const Container = styled.div`
   padding: ${SPACE.XL} ${SPACE.XXL};
+`
+
+const PageHead = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const HeadLink = styled(Link)`
+  cursor: pointer;
+  font-weight: 600;
 `
 
 const Table = styled.div`

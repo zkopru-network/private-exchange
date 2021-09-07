@@ -10,6 +10,14 @@ const PrimaryButton = styled.button`
   border: none;
   box-shadow: 0px 1px 4px ${({ theme }) => theme.shadow};
   cursor: pointer;
+
+  ${({ disabled }) =>
+    disabled
+      ? `
+  opacity: 0.8;
+  cursor: initial;
+  `
+      : ''}
 `
 
 export default PrimaryButton

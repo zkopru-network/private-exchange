@@ -14,7 +14,7 @@ const Header = () => {
       <Logo>PrivateExchange</Logo>
       <div>
         <HeaderLink href="/">Home</HeaderLink>
-        <HeaderLink href="/advertisement">Advertise</HeaderLink>
+        <HeaderLink href="/advertise">Advertise</HeaderLink>
       </div>
       <div>
         {active && account ? (
