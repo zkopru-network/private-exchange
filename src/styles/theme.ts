@@ -22,7 +22,7 @@ const theme: Theme = {
   error: '#ff0230',
   primary: '#9473d4',
   secondary: '#c9e977',
-  border: 'gray',
+  border: '#bebebe',
   disabled: 'gray',
   control: '#e8dcff',
   shadow: 'gray',

@@ -1,3 +1,10 @@
+export type Token = {
+  name: string
+  symbol: string
+  address: string
+  decimals: number
+}
+
 const tokens = [
   {
     name: 'Ethereum',

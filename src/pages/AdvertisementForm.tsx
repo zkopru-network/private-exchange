@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
-import { useForm } from 'react-hook-form'
+import styled, { useTheme } from 'styled-components'
+import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import Select from 'react-select'
 import { useAdvertiseMutation } from '../hooks/advertisement'
 import PrimaryButton from '../components/PrimaryButton'
 import Title from '../components/Title'
@@ -19,12 +20,14 @@ const AdvertisementForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors }
   } = useForm<FormData>({
     mode: 'onBlur'
   })
 
   const advertiseMutation = useAdvertiseMutation()
+  const theme = useTheme()
 
   const onSubmit = handleSubmit(async (data) => {
     setSubmitting(true)
@@ -44,36 +47,67 @@ const AdvertisementForm = () => {
       <FormContainer>
         <form onSubmit={onSubmit}>
           <FormControl>
-            <Label>Currency 1</Label>
-            {/* TODO: use token select dropdown */}
-            <Input
-              {...register('currency1', {
-                required: 'This field is required',
-                validate: {
-                  tokenExist: (value) =>
-                    tokens.findIndex((v) => v.symbol === value) !== -1 ||
-                    'Invalid token'
-                }
-              })}
-              error={!!errors.currency1}
+            <Label>From token</Label>
+            <Controller
+              name="currency1"
+              control={control}
+              render={({ field: { onChange, onBlur } }) => (
+                <Select
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      borderRadius: RADIUS.M,
+                      borderColor: !!errors.currency1
+                        ? theme.error
+                        : theme.border
+                    })
+                  }}
+                  options={tokens.map((token) => ({
+                    label: token.symbol,
+                    value: token.symbol
+                  }))}
+                  onChange={(token) => {
+                    if (!token) return
+                    onChange(token.value)
+                  }}
+                  onBlur={onBlur}
+                />
+              )}
+              rules={{ required: 'This field is required' }}
             />
             <ErrorMessage>{errors.currency1?.message || ''}</ErrorMessage>
           </FormControl>
 
           <FormControl>
-            <Label>Currency 2</Label>
-            {/* TODO: use token select dropdown */}
-            <Input
-              {...register('currency2', {
-                required: 'This field is required',
-                validate: {
-                  tokenExist: (value) =>
-                    tokens.findIndex((v) => v.symbol === value) !== -1 ||
-                    'Invalid token'
-                }
-              })}
-              error={!!errors.currency2}
+            <Label>To token</Label>
+            <Controller
+              name="currency2"
+              control={control}
+              render={({ field: { onChange, onBlur } }) => (
+                <Select
+                  styles={{
+                    control: (provided) => ({
+                      ...provided,
+                      borderRadius: RADIUS.M,
+                      borderColor: !!errors.currency2
+                        ? theme.error
+                        : theme.border
+                    })
+                  }}
+                  options={tokens.map((token) => ({
+                    label: token.symbol,
+                    value: token.symbol
+                  }))}
+                  onChange={(token) => {
+                    if (!token) return
+                    onChange(token.value)
+                  }}
+                  onBlur={onBlur}
+                />
+              )}
+              rules={{ required: 'This field is required' }}
             />
+
             <ErrorMessage>{errors.currency2?.message || ''}</ErrorMessage>
           </FormControl>
 
@@ -87,6 +121,7 @@ const AdvertisementForm = () => {
             <ErrorMessage>{errors.amount?.message || ''}</ErrorMessage>
           </FormControl>
 
+          {/* TODO: if not connected, button should be connect wallet */}
           {submitting ? (
             <PrimaryButton disabled>Submitting...</PrimaryButton>
           ) : (
@@ -125,6 +160,7 @@ const Input = styled.input<{ error?: boolean }>`
   border-radius: ${RADIUS.M};
   border: solid 1px ${({ theme }) => theme.border};
   ${({ error, theme }) => (error ? `border-color: ${theme.error}` : '')};
+  width: 100%;
 `
 
 const Label = styled.label`
