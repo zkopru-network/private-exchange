@@ -23,7 +23,7 @@ $ npm i
 ### Setup docker environment
 
 ```bash
-$ npm run docker:bootstrap
+$ npm run bootstrap
 $ npm run docker:start
 ```
 
