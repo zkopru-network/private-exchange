@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Route, Switch } from 'wouter'
+
+import Header from './components/Header'
+import AdvertisementList from './pages/AdvertisementList'
+import AdvertisementForm from './pages/AdvertisementForm'
+import GlobalStyle from './styles/global'
+import { useEagerConnect } from './hooks/wallet'
+import LoadingSpinner from './components/LoadingSpinner'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
+  const tried = useEagerConnect()
+
+  if (!tried) return <LoadingSpinner />
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <GlobalStyle />
+      <Header />
+      <Switch>
+        <Route path="/">
+          <AdvertisementList />
+        </Route>
+        <Route path="/advertise">
+          <AdvertisementForm />
+        </Route>
+      </Switch>
+      <Toaster />
+    </>
+  )
 }
 
-export default App;
+export default App
