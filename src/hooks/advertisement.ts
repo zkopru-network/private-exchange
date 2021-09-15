@@ -10,6 +10,7 @@ type AdvertiseParams = {
   currency1: string
   currency2: string
   amount: number
+  peerId: string
 }
 
 export function useAdvertiseMutation() {
@@ -17,12 +18,11 @@ export function useAdvertiseMutation() {
   const { library } = useWeb3React<providers.Web3Provider>()
 
   return useMutation<ContractTransaction, Error, AdvertiseParams>(
-    async ({ currency1, currency2, amount }) => {
+    async ({ currency1, currency2, amount, peerId }) => {
       if (!library) throw new Error('getting provider failed. connect wallet')
       const signer = library.getSigner()
       const contract = PeekABook__factory.connect(addresses.PeekABook, signer)
       const { pairName, buyOrSell } = pairNameAndBuyOrSell(currency1, currency2)
-      const peerId = 'id' // todo: get peerId from hook
 
       return await contract.advertise(pairName, buyOrSell, amount, peerId)
     }

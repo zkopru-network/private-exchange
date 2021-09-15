@@ -5,16 +5,21 @@ import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
 import { useAdvertiseMutation } from '../hooks/advertisement'
+import useStore, { PEER_STATUS } from '../store'
+import { getOrGeneratePeerId } from '../utils/peer'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
+import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
+import SMPPeer from 'js-smp-peer'
 
 type FormData = {
   currency1: string
   currency2: string
   amount: number
+  price: number
 }
 
 const AdvertisementForm = () => {
@@ -23,18 +28,23 @@ const AdvertisementForm = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isValid }
   } = useForm<FormData>({
     mode: 'onChange'
   })
+
+  const fields = watch()
+  const store = useStore()
 
   const advertiseMutation = useAdvertiseMutation()
   const theme = useTheme()
   const { active } = useWeb3React()
 
   const onSubmit = handleSubmit(async (data) => {
+    const peerId = getOrGeneratePeerId()
     setSubmitting(true)
-    const res = await advertiseMutation.mutateAsync(data)
+    const res = await advertiseMutation.mutateAsync({ ...data, peerId })
     const receipt = await res.wait()
     if (receipt.status === 1) {
       toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
@@ -42,6 +52,18 @@ const AdvertisementForm = () => {
       toast.error('Advertise transaction failed...', { icon: '😥' })
     }
     setSubmitting(false)
+    // peer management
+    // initialize SMPPeer and set peer to store
+    store.setPeerStatus(PEER_STATUS.STARTING)
+    const peer = new SMPPeer(data.price.toString(), peerId)
+    await peer.connectToPeerServer()
+    store.setPeer(peer)
+    store.setPeerStatus(PEER_STATUS.RUNNING)
+    peer.on('incoming', (remotePeerId: string, result: boolean) => {
+      console.log(
+        `Incoming SMP finished. peerId: ${remotePeerId}, result: ${result}`
+      )
+    })
   })
 
   return (
@@ -86,9 +108,11 @@ const AdvertisementForm = () => {
                     onBlur={onBlur}
                   />
                 )}
-                rules={{ required: 'This field is required' }}
+                rules={{ required: true }}
               />
-              <ErrorMessage>{errors.currency1?.message || ''}</ErrorMessage>
+              <ErrorMessage>
+                {getFormErrorMessage(errors.currency1?.type)}
+              </ErrorMessage>
             </FormControl>
 
             <FormControl>
@@ -118,20 +142,49 @@ const AdvertisementForm = () => {
                     onBlur={onBlur}
                   />
                 )}
-                rules={{ required: 'This field is required' }}
+                rules={{ required: true }}
               />
 
-              <ErrorMessage>{errors.currency2?.message || ''}</ErrorMessage>
+              <ErrorMessage>
+                {getFormErrorMessage(errors.currency2?.type)}
+              </ErrorMessage>
             </FormControl>
 
             <FormControl>
-              <Label>Amount</Label>
+              <Label>Amount (From token)</Label>
               <Input
-                {...register('amount', { required: 'This field is required' })}
+                {...register('amount', {
+                  required: true,
+                  validate: {
+                    positiveNumber: (v) => v > 0
+                  }
+                })}
                 placeholder="0.0"
                 error={!!errors.amount}
               />
-              <ErrorMessage>{errors.amount?.message || ''}</ErrorMessage>
+              <ErrorMessage>
+                {getFormErrorMessage(errors.amount?.type)}
+              </ErrorMessage>
+            </FormControl>
+
+            <FormControl>
+              <Label>
+                Price ({fields.currency2 || '-'}/{fields.currency1 || '-'})
+                (*private field)
+              </Label>
+              <Input
+                {...register('price', {
+                  required: true,
+                  validate: {
+                    positiveNumber: (v) => v > 0
+                  }
+                })}
+                placeholder="0.0"
+                error={!!errors.price}
+              />
+              <ErrorMessage>
+                {getFormErrorMessage(errors.price?.type)}
+              </ErrorMessage>
             </FormControl>
 
             {!active ? (

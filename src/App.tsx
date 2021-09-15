@@ -1,13 +1,14 @@
 import React from 'react'
 import { Route, Switch } from 'wouter'
 
+import { Toaster } from 'react-hot-toast'
 import Header from './components/Header'
 import AdvertisementList from './pages/AdvertisementList'
 import AdvertisementForm from './pages/AdvertisementForm'
 import GlobalStyle from './styles/global'
 import { useEagerConnect } from './hooks/wallet'
 import LoadingSpinner from './components/LoadingSpinner'
-import { Toaster } from 'react-hot-toast'
+import SMPPanel from './components/SMPPanel'
 
 function App() {
   const tried = useEagerConnect()
@@ -27,6 +28,7 @@ function App() {
         </Route>
       </Switch>
       <Toaster />
+      <SMPPanel />
     </>
   )
 }

@@ -25,8 +25,10 @@
     "react-select": "^4.3.1",
     "styled-components": "^5.3.1",
     "typescript": "^4.1.2",
+    "uuid": "^3.4.0",
     "web-vitals": "^1.0.1",
-    "wouter": "^2.7.4"
+    "wouter": "^2.7.4",
+    "zustand": "^3.5.10"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -58,6 +60,7 @@
   },
   "devDependencies": {
     "@types/react-select": "^4.0.17",
-    "@types/styled-components": "^5.1.13"
+    "@types/styled-components": "^5.1.13",
+    "@types/uuid": "^8.3.1"
   }
 }
