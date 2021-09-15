@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Link } from 'wouter'
+import { Link, useLocation } from 'wouter'
 import Title from '../components/Title'
 import PrimaryButton from '../components/PrimaryButton'
 import { RADIUS, SPACE } from '../constants'
@@ -8,6 +8,7 @@ import { useAdvertisementsQuery } from '../hooks/advertisement'
 
 const AdvertisementList = () => {
   const advertisementQuery = useAdvertisementsQuery()
+  const [location, setLocation] = useLocation()
 
   if (advertisementQuery.isLoading) {
     return <div>Loading...</div>
@@ -37,7 +38,11 @@ const AdvertisementList = () => {
                   <Cell>{ad.buyOrSell ? 'Buy' : 'Sell'}</Cell>
                   <Cell>{ad.peerID}</Cell>
                   <Cell>
-                    <PrimaryButton>Exchange</PrimaryButton>
+                    <PrimaryButton
+                      onClick={() => setLocation(`/exchange/${ad.adID}`)}
+                    >
+                      Exchange
+                    </PrimaryButton>
                   </Cell>
                 </Row>
               )
@@ -77,7 +82,7 @@ const Row = styled.div`
   align-items: center;
 `
 
-const HeadRow = styled(Row)``
+const HeadRow = Row
 
 const Cell = styled.span`
   width: 100px;

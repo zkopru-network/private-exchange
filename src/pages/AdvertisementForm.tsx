@@ -58,12 +58,12 @@ const AdvertisementForm = () => {
     const peer = new SMPPeer(data.price.toString(), peerId)
     await peer.connectToPeerServer()
     store.setPeer(peer)
-    store.setPeerStatus(PEER_STATUS.RUNNING)
     peer.on('incoming', (remotePeerId: string, result: boolean) => {
       console.log(
         `Incoming SMP finished. peerId: ${remotePeerId}, result: ${result}`
       )
     })
+    store.setPeerStatus(PEER_STATUS.RUNNING)
   })
 
   return (
