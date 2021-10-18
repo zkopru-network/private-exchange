@@ -1,0 +1,35 @@
+{
+  "address": "0xD4acf8D3d7478926f4bCE88fF42d584D532dA14C",
+  "bootstrap": true,
+  "websocket": "ws://geth:8546",
+  "maxBytes": 131072,
+  "priceMultiplier": 48,
+  "port": 8888,
+  "maxBid": 20000,
+  "daemon": false,
+  "vhosts": "localhost,127.0.0.1",
+  "publicUrls": "60.113.136.20:8888,127.0.0.1:8888",
+  "keystore": {
+    "version": 3,
+    "id": "9d998dc9-8ee2-4ab7-9482-48b7cb7f1a48",
+    "address": "6516cacf6de6df545dbe1d7c5573b922e0ef2552",
+    "crypto": {
+      "ciphertext": "108656924b18c88e2dcc0a11aa6437031e3c7c4cee72242ad6a95b511cb25726",
+      "cipherparams": {
+        "iv": "485afa75f489cabf2bdde55afa20991b"
+      },
+      "cipher": "aes-128-ctr",
+      "kdf": "scrypt",
+      "kdfparams": {
+        "dklen": 32,
+        "salt": "bec938405f64fa4616b34e95a5d73eb538dd49e5d48e2ca29ee655f140c05599",
+        "n": 8192,
+        "r": 8,
+        "p": 1
+      },
+      "mac": "f9827b0671ab92622056f3372124c7a39919e775405e70c613879dc8c3eff267"
+    }
+  },
+  "passwordFile": "/home/coordinator_data/password.secret",
+  "sqlite": "/home/coordinator_data/coordinator.db"
+}
