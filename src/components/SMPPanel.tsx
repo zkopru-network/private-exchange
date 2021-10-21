@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import useStore from '../store'
+import useStore from '../store/peer'
 import { SPACE, RADIUS } from '../constants'
 
 const SMPPanel = () => {

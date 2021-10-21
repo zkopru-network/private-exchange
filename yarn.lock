@@ -7424,6 +7424,11 @@
   "resolved" "https://registry.npmjs.org/js-sha3/-/js-sha3-0.8.0.tgz"
   "version" "0.8.0"
 
+"js-sha512@^0.8.0":
+  "integrity" "sha512-PWsmefG6Jkodqt+ePTvBZCSMFgN7Clckjd0O7su3I0+BW2QWUTJNzjktHsztGLhncP2h8mcF9V9Y2Ha59pAViQ=="
+  "resolved" "https://registry.npmjs.org/js-sha512/-/js-sha512-0.8.0.tgz"
+  "version" "0.8.0"
+
 "js-smp-peer@^0.0.9":
   "integrity" "sha512-vW512kQj/9C0S5dlLacDUocmBHjX1KT4uULEznHzFjRA/5Gk860IIECO45+8G+UomjirPRC/AQ8Ag0VQEbK4VA=="
   "resolved" "https://registry.npmjs.org/js-smp-peer/-/js-smp-peer-0.0.9.tgz"

@@ -31,6 +31,24 @@ $ npm run docker:start
 
 Follow instruction [here](https://docs.zkopru.network/getting-started/configure-coordinator)
 
+### Link @zkopru/client package
+
+Before starting frontend dev server, @zkopru/client needs to be linked because the package is not published on npm.
+
+1. Build zkopru packages following [zkopru docs](https://github.com/zkopru-network/zkopru), then
+
+in `zkopru/packages/client`, run
+
+```bash
+$ yarn link
+```
+
+in this project root, run
+
+```bash
+$ yarnl link @zkopru/client
+```
+
 ### Start frontend dev server:
 
 ```bash

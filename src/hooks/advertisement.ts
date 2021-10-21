@@ -13,6 +13,16 @@ type AdvertiseParams = {
   peerId: string
 }
 
+export type Advertisement = {
+  adID: BigNumber
+  pairIndex: string
+  pair: string
+  buyOrSell: boolean
+  amount: BigNumber
+  peerID: string
+  advertiser: string
+}
+
 export function useAdvertiseMutation() {
   const addresses = useAddresses()
   const { library } = useWeb3React<providers.Web3Provider>()
@@ -41,7 +51,7 @@ function parseAdvertisement(
       advertiser: string
     }
   >
-) {
+): Advertisement {
   return {
     adID: event.args.adID,
     pairIndex: event.args.pairIndex,
@@ -71,4 +81,20 @@ export function useAdvertisementsQuery() {
       enabled: !!library
     }
   )
+}
+
+export function useAdvertisementQuery(id: string) {
+  const advertisements = useAdvertisementsQuery()
+
+  return advertisements.data
+    ? {
+        isError: advertisements.isError,
+        isLoading: advertisements.isLoading,
+        data: advertisements.data.find((ad) => ad.adID.toString() === id)
+      }
+    : {
+        isError: advertisements.isError,
+        isLoading: advertisements.isLoading,
+        data: null
+      }
 }

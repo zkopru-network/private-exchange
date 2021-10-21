@@ -5,11 +5,12 @@ import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
 import { useAdvertiseMutation } from '../hooks/advertisement'
-import useStore, { PEER_STATUS } from '../store'
+import useStore, { PEER_STATUS } from '../store/peer'
 import { getOrGeneratePeerId } from '../utils/peer'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
+import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
@@ -43,15 +44,22 @@ const AdvertisementForm = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     const peerId = getOrGeneratePeerId()
-    setSubmitting(true)
-    const res = await advertiseMutation.mutateAsync({ ...data, peerId })
-    const receipt = await res.wait()
-    if (receipt.status === 1) {
-      toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
-    } else {
+    try {
+      setSubmitting(true)
+      const res = await advertiseMutation.mutateAsync({ ...data, peerId })
+      const receipt = await res.wait()
+      if (receipt.status === 1) {
+        toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
+      } else {
+        toast.error('Advertise transaction failed...', { icon: '😥' })
+      }
+      setSubmitting(false)
+    } catch (e) {
+      console.log(e)
       toast.error('Advertise transaction failed...', { icon: '😥' })
+      setSubmitting(false)
+      return
     }
-    setSubmitting(false)
     // peer management
     // initialize SMPPeer and set peer to store
     store.setPeerStatus(PEER_STATUS.STARTING)
@@ -225,45 +233,12 @@ const HeadLink = styled.a`
   cursor: pointer;
   font-weight: 600;
 `
-
-const FormContainer = styled.div`
+export const FormContainer = styled.div`
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.onSurface};
   box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
   border-radius: ${RADIUS.M};
   padding: ${SPACE.M};
-`
-
-const FormControl = styled.div`
-  width: 100%;
-  margin: ${SPACE.M} 0px;
-
-  &:first-child {
-    margin-top: 0;
-  }
-`
-
-const Input = styled.input<{ error?: boolean }>`
-  font-size: ${FONT_SIZE.L};
-  padding: ${SPACE.XS} ${SPACE.S};
-  border-radius: ${RADIUS.M};
-  border: solid 1px ${({ theme }) => theme.border};
-  ${({ error, theme }) => (error ? `border-color: ${theme.error}` : '')};
-  width: 100%;
-`
-
-const Label = styled.label`
-  display: block;
-  font-size: ${FONT_SIZE.S};
-  font-weight: 600;
-  color: ${({ theme }) => theme.onBackground};
-  margin-bottom: ${SPACE.XS};
-`
-
-const ErrorMessage = styled.div`
-  color: ${({ theme }) => theme.error};
-  font-size: ${FONT_SIZE.S};
-  height: 12px;
 `
 
 const SubmitButton = styled(PrimaryButton)`

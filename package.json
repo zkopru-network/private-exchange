@@ -15,6 +15,7 @@
     "@web3-react/network-connector": "^6.1.9",
     "ethers": "^5.4.6",
     "fuse.js": "^6.4.6",
+    "js-sha512": "^0.8.0",
     "js-smp-peer": "^0.0.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
