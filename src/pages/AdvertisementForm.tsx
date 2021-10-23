@@ -4,23 +4,24 @@ import { useWeb3React } from '@web3-react/core'
 import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
+import SMPPeer from 'js-smp-peer'
 import { useAdvertiseMutation } from '../hooks/advertisement'
+import { useSwap } from '../hooks/swap'
 import useStore, { PEER_STATUS } from '../store/peer'
 import { getOrGeneratePeerId } from '../utils/peer'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
-import { FONT_SIZE, RADIUS, SPACE } from '../constants'
+import { FONT_SIZE, RADIUS, SPACE, peerConfig, Tokens } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
-import SMPPeer from 'js-smp-peer'
 
 type FormData = {
   currency1: string
   currency2: string
   amount: number
-  price: number
+  receiveAmount: number
 }
 
 const AdvertisementForm = () => {
@@ -29,16 +30,14 @@ const AdvertisementForm = () => {
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors, isValid }
   } = useForm<FormData>({
     mode: 'onChange'
   })
 
-  const fields = watch()
   const store = useStore()
-
   const advertiseMutation = useAdvertiseMutation()
+  const swapMutation = useSwap()
   const theme = useTheme()
   const { active } = useWeb3React()
 
@@ -62,14 +61,36 @@ const AdvertisementForm = () => {
     }
     // peer management
     // initialize SMPPeer and set peer to store
+    const price = data.receiveAmount / data.amount
     store.setPeerStatus(PEER_STATUS.STARTING)
-    const peer = new SMPPeer(data.price.toString(), peerId)
+    const peer = new SMPPeer(price.toString(), peerId, peerConfig)
     await peer.connectToPeerServer()
     store.setPeer(peer)
-    peer.on('incoming', (remotePeerId: string, result: boolean) => {
-      console.log(
-        `Incoming SMP finished. peerId: ${remotePeerId}, result: ${result}`
+    peer.on('incoming', async (remotePeerId: string, result: boolean) => {
+      toast(
+        `Incoming SMP finished. peerId: ${remotePeerId}, result: ${
+          result ? 'Success' : 'Failed'
+        }.`
       )
+
+      // TODO: get remote peer zkAddress. when implement blind find
+      if (result) {
+        toast('Creating swap transaction')
+        try {
+          await swapMutation.mutateAsync({
+            counterParty: remotePeerId,
+            // @ts-ignore: TODO: post token address to peek-a-book-contract
+            sendToken: Tokens[data.currency1],
+            // @ts-ignore: TODO: post token address to peek-a-book-contract
+            receiveToken: Tokens[data.currency2],
+            receiveAmount: data.receiveAmount,
+            sendAmount: data.amount
+          })
+          toast.success('Successfully create swap transaction.')
+        } catch (e) {
+          toast.error('Creating swap transaction failed.')
+        }
+      }
     })
     store.setPeerStatus(PEER_STATUS.RUNNING)
   })
@@ -159,7 +180,7 @@ const AdvertisementForm = () => {
             </FormControl>
 
             <FormControl>
-              <Label>Amount (From token)</Label>
+              <Label>Amount (Send token)</Label>
               <Input
                 {...register('amount', {
                   required: true,
@@ -176,22 +197,19 @@ const AdvertisementForm = () => {
             </FormControl>
 
             <FormControl>
-              <Label>
-                Price ({fields.currency2 || '-'}/{fields.currency1 || '-'})
-                (*private field)
-              </Label>
+              <Label>Amount (Receive token)</Label>
               <Input
-                {...register('price', {
+                {...register('receiveAmount', {
                   required: true,
                   validate: {
                     positiveNumber: (v) => v > 0
                   }
                 })}
                 placeholder="0.0"
-                error={!!errors.price}
+                error={!!errors.receiveAmount}
               />
               <ErrorMessage>
-                {getFormErrorMessage(errors.price?.type)}
+                {getFormErrorMessage(errors.receiveAmount?.type)}
               </ErrorMessage>
             </FormControl>
 

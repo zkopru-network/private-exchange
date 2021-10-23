@@ -28,4 +28,16 @@ enum SupportedChainId {
   LOCAL = 1337
 }
 
-export { FONT_SIZE, SPACE, RADIUS, SupportedChainId }
+const peerConfig = {
+  host: '0.peerjs.com',
+  port: 443,
+  secure: true,
+  path: '/'
+}
+
+const Tokens = {
+  ETH: '0x0000000000000000000000000000000000000000',
+  TT: '0x2471942920adf662c140f612dbd4ca343805499d'
+}
+
+export { FONT_SIZE, SPACE, RADIUS, SupportedChainId, peerConfig, Tokens }

@@ -1,25 +1,65 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
+import toast from 'react-hot-toast'
 import Title from '../components/Title'
 import { Input, Label, FormControl, FormValue } from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
-import { RADIUS, SPACE } from '../constants'
-import { useState } from 'react'
+import { RADIUS, SPACE, Tokens } from '../constants'
+import { useSmp } from '../hooks/smp'
+import { useSwap } from '../hooks/swap'
 
 const Exchange = () => {
   // extract url params. always match path.
   const [match, params] = useRoute('/exchange/:id')
-  const [price, setPrice] = useState(0)
+  const [sendAmount, setSendAmount] = useState(0)
   const id: string = (params as any).id
 
   // TODO:
   const ad = useAdvertisementQuery(id)
   // use exchange mutation
+  const smpMutation = useSmp()
+  const swapMutation = useSwap()
 
-  const runSMP = () => {
-    console.log('do smp', price)
+  const runSMP = async () => {
+    const advertisement = ad?.data
+    if (!advertisement) {
+      console.error('ad not loaded.')
+      return
+    }
+    const counterparty = advertisement.peerID
+
+    const price = sendAmount / advertisement.amount.toNumber()
+    toast('Starting smp....')
+    const smpResult = await smpMutation.mutateAsync({
+      price,
+      counterpartyId: counterparty
+    })
+    toast(`Finish running smp. Result: ${smpResult ? 'Success' : 'Failed'}`)
+    const [currency1, currency2] = advertisement.pair.split('/')
+    const buyOrSell = advertisement.buyOrSell
+    // @ts-ignore: TODO: post token address to peek-a-book-contract
+    const sendToken = buyOrSell ? Tokens[currency1] : Tokens[currency2]
+    // @ts-ignore: TODO: post token address to peek-a-book-contract
+    const receiveToken = buyOrSell ? Tokens[currency2] : Tokens[currency1]
+
+    if (smpResult) {
+      try {
+        toast('Creating swap transaction.')
+        // TODO: make amount BigNumber after getting token info from contract.
+        await swapMutation.mutateAsync({
+          counterParty: advertisement.advertiser,
+          sendToken,
+          receiveToken,
+          receiveAmount: advertisement.amount.toNumber(),
+          sendAmount: sendAmount
+        })
+        toast.success('Successfully created swap transaction.')
+      } catch (e) {
+        toast.error('Failed to create swap transaction.')
+      }
+    }
   }
 
   if (ad.isLoading && !ad.data) {
@@ -50,6 +90,10 @@ const Exchange = () => {
       </PageHead>
       <FormContainer>
         <FormControl>
+          <Label>PeerID</Label>
+          <FormValue>{advertisement.peerID.toString()}</FormValue>
+        </FormControl>
+        <FormControl>
           <Label>Pair</Label>
           <FormValue>{advertisement.pair.toString()}</FormValue>
         </FormControl>
@@ -65,26 +109,18 @@ const Exchange = () => {
         </FormControl>
         <FormControl>
           <Label>
-            Amount ({advertisement.buyOrSell ? currency2 : currency1})
+            Amount Receive({advertisement.buyOrSell ? currency2 : currency1})
           </Label>
           <FormValue>{advertisement.amount.toString()}</FormValue>
         </FormControl>
         <FormControl>
-          <Label>PeerID</Label>
-          <FormValue>{advertisement.peerID.toString()}</FormValue>
-        </FormControl>
-        <FormControl>
           <Label>
-            Price (
-            {advertisement.buyOrSell
-              ? `${currency1}/${currency2}`
-              : `${currency2}/${currency1}`}
-            ) (*private field)
+            Amount Send({advertisement.buyOrSell ? currency1 : currency2})
           </Label>
           <Input
             placeholder="0.0"
             type="number"
-            onChange={(e) => setPrice(Number(e.target.value))}
+            onChange={(e) => setSendAmount(Number(e.target.value))}
           />
         </FormControl>
         <PrimaryButton onClick={runSMP}>Exchange</PrimaryButton>
