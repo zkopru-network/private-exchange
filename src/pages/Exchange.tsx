@@ -6,9 +6,10 @@ import Title from '../components/Title'
 import { Input, Label, FormControl, FormValue } from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
-import { RADIUS, SPACE, Tokens } from '../constants'
 import { useSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
+import { RADIUS, SPACE, Tokens } from '../constants'
+import { toScaled, pow10 } from '../utils/bn'
 
 const Exchange = () => {
   // extract url params. always match path.
@@ -28,32 +29,38 @@ const Exchange = () => {
       console.error('ad not loaded.')
       return
     }
-    const counterparty = advertisement.peerID
 
-    const price = sendAmount / advertisement.amount.toNumber()
     toast('Starting smp....')
-    const smpResult = await smpMutation.mutateAsync({
-      price,
-      counterpartyId: counterparty
-    })
-    toast(`Finish running smp. Result: ${smpResult ? 'Success' : 'Failed'}`)
+    const counterParty = advertisement.peerID
     const [currency1, currency2] = advertisement.pair.split('/')
     const buyOrSell = advertisement.buyOrSell
-    // @ts-ignore: TODO: post token address to peek-a-book-contract
-    const sendToken = buyOrSell ? Tokens[currency1] : Tokens[currency2]
-    // @ts-ignore: TODO: post token address to peek-a-book-contract
-    const receiveToken = buyOrSell ? Tokens[currency2] : Tokens[currency1]
+    const sendTokenSymbol = buyOrSell ? currency1 : currency2
+    const receiveTokenSymbol = buyOrSell ? currency2 : currency1
+    const sendToken = Tokens[sendTokenSymbol].address
+    const receiveToken = Tokens[receiveTokenSymbol].address
+
+    const sendDecimals = Tokens[sendTokenSymbol].decimals
+    const receiveDecimals = Tokens[receiveTokenSymbol].decimals
+    const price = toScaled(sendAmount, sendDecimals)
+      .mul(pow10(receiveDecimals))
+      .div(advertisement.amount)
+
+    const smpResult = await smpMutation.mutateAsync({
+      price: price.toString(),
+      counterpartyId: counterParty
+    })
+    toast(`Finish running smp. Result: ${smpResult ? 'Success' : 'Failed'}`)
 
     if (smpResult) {
       try {
         toast('Creating swap transaction.')
         // TODO: make amount BigNumber after getting token info from contract.
         await swapMutation.mutateAsync({
-          counterParty: advertisement.advertiser,
+          counterParty,
           sendToken,
           receiveToken,
-          receiveAmount: advertisement.amount.toNumber(),
-          sendAmount: sendAmount
+          receiveAmount: advertisement.amount, // scaled
+          sendAmount: toScaled(sendAmount, sendDecimals)
         })
         toast.success('Successfully created swap transaction.')
       } catch (e) {

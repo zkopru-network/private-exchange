@@ -189,7 +189,6 @@ export function useLoadL2Balance() {
       '0x560bd972e69f4dc15abf6093fcff2bc7e14f9239'.toLowerCase()
     ]
     const { erc20, eth } = spendable
-    console.log(erc20, eth)
     useStore.setState({
       registeredTokens: erc20Info.filter(({ address }) => {
         return tokenBlacklist.indexOf(address.toLowerCase()) === -1

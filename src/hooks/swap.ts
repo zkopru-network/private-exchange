@@ -1,12 +1,13 @@
+import { BigNumber } from 'ethers'
 import { useMutation } from 'react-query'
-import { v4 as uuidv4 } from 'uuid'
+import { randomHex } from 'web3-utils'
 import useStore from '../store/zkopru'
 
 type SwapParams = {
   sendToken: string // token address to send. ETH is Zero address.
   receiveToken: string // token address to receive. ETH is Zero address
-  sendAmount: number
-  receiveAmount: number
+  sendAmount: BigNumber
+  receiveAmount: BigNumber
   counterParty: string
 }
 
@@ -27,17 +28,17 @@ export function useSwap() {
       if (!account) throw new Error('zkAccount not set')
 
       // TODO: set fee from input
-      const fee = '100000000'
+      const fee = '10000000000000000'
       // check how it works.
-      const salt = uuidv4()
+      const salt = randomHex(16)
 
       try {
         const tx = await wallet.generateSwapTransaction(
           counterParty,
           sendToken,
-          sendAmount,
+          sendAmount.toString(),
           receiveToken,
-          receiveAmount,
+          receiveAmount.toString(),
           fee,
           salt
         )

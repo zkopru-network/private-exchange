@@ -11,8 +11,8 @@ export function pairNameAndBuyOrSell(
   buyOrSell: boolean
 } {
   if (currency1 < currency2) {
-    return { pairName: getPairName(currency1, currency2), buyOrSell: true }
+    return { pairName: getPairName(currency1, currency2), buyOrSell: false }
   } else {
-    return { pairName: getPairName(currency2, currency1), buyOrSell: false }
+    return { pairName: getPairName(currency2, currency1), buyOrSell: true }
   }
 }

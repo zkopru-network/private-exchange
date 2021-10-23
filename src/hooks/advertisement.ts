@@ -9,7 +9,7 @@ import { TypedEvent } from '../typechain/commons'
 type AdvertiseParams = {
   currency1: string
   currency2: string
-  amount: number
+  amount: BigNumber
   peerId: string
 }
 

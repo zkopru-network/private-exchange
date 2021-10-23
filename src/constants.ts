@@ -35,9 +35,9 @@ const peerConfig = {
   path: '/'
 }
 
-const Tokens = {
-  ETH: '0x0000000000000000000000000000000000000000',
-  TT: '0x2471942920adf662c140f612dbd4ca343805499d'
+const Tokens: { [key: string]: { address: string; decimals: number } } = {
+  ETH: { address: '0x0000000000000000000000000000000000000000', decimals: 18 },
+  TT: { address: '0x2471942920adf662c140f612dbd4ca343805499d', decimals: 4 }
 }
 
 export { FONT_SIZE, SPACE, RADIUS, SupportedChainId, peerConfig, Tokens }

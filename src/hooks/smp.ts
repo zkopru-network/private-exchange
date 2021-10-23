@@ -1,11 +1,10 @@
 import { useMutation } from 'react-query'
 import SMPPeer from 'js-smp-peer'
 import useStore from '../store/zkopru'
-import { getOrGeneratePeerId } from '../utils/peer'
 import { peerConfig } from '../constants'
 
 type SMPParams = {
-  price: number
+  price: string
   counterpartyId: string
 }
 
@@ -17,7 +16,7 @@ export function useSmp() {
 
       // const peerId = getOrGeneratePeerId()
       const peerId = zkAddress.toString()
-      const peer = new SMPPeer(price.toString(), peerId, peerConfig)
+      const peer = new SMPPeer(price, peerId, peerConfig)
       await peer.connectToPeerServer()
 
       const result = await peer.runSMP(counterpartyId)
