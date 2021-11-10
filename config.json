@@ -7,7 +7,8 @@
   "port": 8888,
   "maxBid": 20000,
   "daemon": false,
-  "vhosts": "localhost,127.0.0.1",
+  "vhosts": "*",
+  "corsdomain": "*",
   "publicUrls": "60.113.136.20:8888,127.0.0.1:8888",
   "keystore": {
     "version": 3,
