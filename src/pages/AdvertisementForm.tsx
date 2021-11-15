@@ -4,20 +4,17 @@ import { useWeb3React } from '@web3-react/core'
 import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
-import SMPPeer from 'js-smp-peer'
 import { useAdvertiseMutation } from '../hooks/advertisement'
-import { useSwap } from '../hooks/swap'
-import useStore, { PEER_STATUS } from '../store/peer'
 import useZkopruStore from '../store/zkopru'
-import { getOrGeneratePeerId } from '../utils/peer'
-import { pow10, toScaled } from '../utils/bn'
+import { toScaled } from '../utils/bn'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
-import { FONT_SIZE, RADIUS, SPACE, peerConfig, Tokens } from '../constants'
+import { FONT_SIZE, RADIUS, SPACE, Tokens } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
+import { useListenSmp } from '../hooks/smp'
 
 type FormData = {
   currency1: string
@@ -37,22 +34,14 @@ const AdvertisementForm = () => {
     mode: 'onChange'
   })
 
-  const store = useStore()
   const advertiseMutation = useAdvertiseMutation()
-  const swapMutation = useSwap()
   const theme = useTheme()
   const { active } = useWeb3React()
+  const listenSmp = useListenSmp()
 
   const onSubmit = handleSubmit(async (data) => {
-    // const peerId = getOrGeneratePeerId()
-
-    // TODO: error handling
     const peerId = useZkopruStore.getState().zkAddress as string
     const scaledAmount = toScaled(data.amount, Tokens[data.currency1].decimals)
-    const scaledReceiveAmount = toScaled(
-      data.receiveAmount,
-      Tokens[data.currency2].decimals
-    )
 
     try {
       setSubmitting(true)
@@ -64,10 +53,12 @@ const AdvertisementForm = () => {
       const receipt = await res.wait()
       if (receipt.status === 1) {
         toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
+        setSubmitting(false)
       } else {
         toast.error('Advertise transaction failed...', { icon: '😥' })
+        setSubmitting(false)
+        return
       }
-      setSubmitting(false)
     } catch (e) {
       console.log(e)
       toast.error('Advertise transaction failed...', { icon: '😥' })
@@ -75,36 +66,7 @@ const AdvertisementForm = () => {
       return
     }
 
-    // initialize SMPPeer and set peer to store
-    const price = scaledReceiveAmount
-      .mul(pow10(Tokens[data.currency1].decimals))
-      .div(scaledAmount)
-    store.setPeerStatus(PEER_STATUS.STARTING)
-    console.log(price.toString())
-    const peer = new SMPPeer(price.toString(), peerId, peerConfig)
-    await peer.connectToPeerServer()
-    store.setPeer(peer)
-    peer.on('incoming', async (remotePeerId: string, result: boolean) => {
-      toast(`Incoming SMP finished. result: ${result ? 'Success' : 'Failed'}.`)
-
-      // TODO: get remote peer zkAddress. when implement blind find
-      if (result) {
-        toast('Creating swap transaction')
-        try {
-          await swapMutation.mutateAsync({
-            counterParty: remotePeerId,
-            sendToken: Tokens[data.currency1].address,
-            receiveToken: Tokens[data.currency2].address,
-            receiveAmount: scaledReceiveAmount,
-            sendAmount: scaledAmount
-          })
-          toast.success('Successfully create swap transaction.')
-        } catch (e) {
-          toast.error('Creating swap transaction failed.')
-        }
-      }
-    })
-    store.setPeerStatus(PEER_STATUS.RUNNING)
+    await listenSmp(data)
   })
 
   return (

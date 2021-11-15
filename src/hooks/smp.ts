@@ -1,7 +1,12 @@
+import { useCallback } from 'react'
 import { useMutation } from 'react-query'
 import SMPPeer from 'js-smp-peer'
+import toast from 'react-hot-toast'
 import useStore from '../store/zkopru'
-import { peerConfig } from '../constants'
+import { useSwap } from './swap'
+import usePeerStore, { PEER_STATUS } from '../store/peer'
+import { peerConfig, Tokens } from '../constants'
+import { pow10, toScaled } from '../utils/bn'
 
 type SMPParams = {
   price: string
@@ -31,4 +36,55 @@ export function useSmp() {
       return result
     }
   )
+}
+
+type FormData = {
+  currency1: string
+  currency2: string
+  amount: number
+  receiveAmount: number
+}
+
+export function useListenSmp() {
+  const store = usePeerStore()
+  const swapMutation = useSwap()
+
+  return useCallback(async (data: FormData) => {
+    const peerId = useStore.getState().zkAddress as string
+    const scaledAmount = toScaled(data.amount, Tokens[data.currency1].decimals)
+    const scaledReceiveAmount = toScaled(
+      data.receiveAmount,
+      Tokens[data.currency2].decimals
+    )
+
+    // initialize SMPPeer and set peer to store
+    const price = scaledReceiveAmount
+      .mul(pow10(Tokens[data.currency1].decimals))
+      .div(scaledAmount)
+    store.setPeerStatus(PEER_STATUS.STARTING)
+    const peer = new SMPPeer(price.toString(), peerId, peerConfig)
+    await peer.connectToPeerServer()
+    store.setPeer(peer)
+    peer.on('incoming', async (remotePeerId: string, result: boolean) => {
+      toast(`Incoming SMP finished. result: ${result ? 'Success' : 'Failed'}.`)
+
+      // TODO: get remote peer zkAddress. when implement blind find
+      if (result) {
+        toast('Creating swap transaction')
+        try {
+          await swapMutation.mutateAsync({
+            counterParty: remotePeerId,
+            sendToken: Tokens[data.currency1].address,
+            receiveToken: Tokens[data.currency2].address,
+            receiveAmount: scaledReceiveAmount,
+            sendAmount: scaledAmount
+          })
+          toast.success('Successfully create swap transaction.')
+        } catch (e) {
+          toast.error('Creating swap transaction failed.')
+        }
+      }
+    })
+    store.setPeerStatus(PEER_STATUS.RUNNING)
+  }, [])
 }

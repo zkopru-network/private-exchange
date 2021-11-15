@@ -5,6 +5,7 @@ import Title from '../components/Title'
 import PrimaryButton from '../components/PrimaryButton'
 import { RADIUS, SPACE } from '../constants'
 import { useAdvertisementsQuery } from '../hooks/advertisement'
+import { shortAddressString } from '../utils/string'
 
 const AdvertisementList = () => {
   const advertisementQuery = useAdvertisementsQuery()
@@ -36,7 +37,7 @@ const AdvertisementList = () => {
                   <Cell>{ad.pair}</Cell>
                   <Cell>{ad.amount.toString()}</Cell>
                   <Cell>{ad.buyOrSell ? 'Buy' : 'Sell'}</Cell>
-                  <Cell>{ad.peerID}</Cell>
+                  <Cell>{shortAddressString(ad.peerID)}</Cell>
                   <Cell>
                     <PrimaryButton
                       onClick={() => setLocation(`/exchange/${ad.adID}`)}

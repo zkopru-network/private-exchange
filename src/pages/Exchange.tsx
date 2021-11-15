@@ -10,6 +10,7 @@ import { useSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
 import { RADIUS, SPACE, Tokens } from '../constants'
 import { toScaled, pow10 } from '../utils/bn'
+import { shortAddressString } from '../utils/string'
 
 const Exchange = () => {
   // extract url params. always match path.
@@ -98,7 +99,9 @@ const Exchange = () => {
       <FormContainer>
         <FormControl>
           <Label>PeerID</Label>
-          <FormValue>{advertisement.peerID.toString()}</FormValue>
+          <FormValue>
+            {shortAddressString(advertisement.peerID.toString())}
+          </FormValue>
         </FormControl>
         <FormControl>
           <Label>Pair</Label>
