@@ -4,12 +4,10 @@ import { useWeb3React } from '@web3-react/core'
 import { sha512_256 } from 'js-sha512'
 import { fromWei } from '../utils/wei'
 
-// TODO: import appropriate typed source
 // @ts-ignore: no declaration file
 import Zkopru, { ZkAccount, UtxoStatus } from '@zkopru/client/browser'
 import useStore, { Status } from '../store/zkopru'
 
-// TODO: import from synchronizer
 export enum NetworkStatus {
   STOPPED = 'stopped',
   ON_SYNCING = 'on syncing',

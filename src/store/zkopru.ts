@@ -1,8 +1,8 @@
 import create from 'zustand'
 
 // TODO: update import path once correctly exported from @zkopru/client package
-import ZkopruNode from '@zkopru/client/src/zkopru-node'
-import ZkWallet from '@zkopru/client/src/zkopru-wallet'
+import type ZkopruNode from '@zkopru/client/dist/zkopru-node'
+import type ZkWallet from '@zkopru/client/dist/zkopru-wallet'
 
 // TODO: import ZkAddress from @zkopru/client
 type ZkAddress = any
