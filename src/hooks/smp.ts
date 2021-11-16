@@ -3,8 +3,9 @@ import { useMutation } from 'react-query'
 import SMPPeer from 'js-smp-peer'
 import toast from 'react-hot-toast'
 import useStore from '../store/zkopru'
-import { useSwap } from './swap'
 import usePeerStore, { PEER_STATUS } from '../store/peer'
+import { useSwap } from './swap'
+import { useUpdateAdvertisementMutation } from './advertisement'
 import { peerConfig, Tokens } from '../constants'
 import { pow10, toScaled } from '../utils/bn'
 
@@ -48,6 +49,7 @@ type FormData = {
 export function useListenSmp() {
   const store = usePeerStore()
   const swapMutation = useSwap()
+  const updateAdvertisement = useUpdateAdvertisementMutation()
 
   return useCallback(async (data: FormData) => {
     const peerId = useStore.getState().zkAddress as string
@@ -80,6 +82,8 @@ export function useListenSmp() {
             sendAmount: scaledAmount
           })
           toast.success('Successfully create swap transaction.')
+
+          await updateAdvertisement.mutateAsync()
         } catch (e) {
           toast.error('Creating swap transaction failed.')
         }

@@ -42,12 +42,17 @@ const AdvertisementForm = () => {
   const onSubmit = handleSubmit(async (data) => {
     const peerId = useZkopruStore.getState().zkAddress as string
     const scaledAmount = toScaled(data.amount, Tokens[data.currency1].decimals)
+    const scaledReceiveAmount = toScaled(
+      data.amount,
+      Tokens[data.currency2].decimals
+    )
 
     try {
       setSubmitting(true)
       const res = await advertiseMutation.mutateAsync({
         ...data,
         amount: scaledAmount,
+        receiveAmount: scaledReceiveAmount,
         peerId
       })
       const receipt = await res.wait()

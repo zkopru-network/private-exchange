@@ -10,12 +10,14 @@ import BalanceSection from './components/BalanceSection'
 import GlobalStyle from './styles/global'
 import { useEagerConnect } from './hooks/wallet'
 import { useStartSync } from './hooks/zkopru'
+import { useStartLoadExistingAd } from './hooks/advertisement'
 import LoadingSpinner from './components/LoadingSpinner'
 import SMPPanel from './components/SMPPanel'
 
 function App() {
   const tried = useEagerConnect()
   useStartSync()
+  useStartLoadExistingAd()
 
   if (!tried) return <LoadingSpinner />
 

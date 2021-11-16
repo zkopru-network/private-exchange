@@ -3091,15 +3091,15 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@zkopru/account@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/account/-/account-2.0.0-beta.3.tgz#5cc205ecd23cb52ce1e1bcc6b438f54a70011c4f"
-  integrity sha512-cG3jP0Cx4ttQbrvKikMiIMA2NTGGo2VEDAcvprh5MOhg7brOk0rik3WLwua+vitYfL4s41KiFMC+7+JkcfdwyA==
+"@zkopru/account@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/account/-/account-2.0.0-beta.4.tgz#de1f2df901db90041c93691dc7400ff9088ec3ac"
+  integrity sha512-f3T71HdIfPZadBLBNaB9hd0jzXtQBv3/iDefTLYgkBN4AwExX/VO+mz7IDJx94soPo1/P6KcsfD26UBlLwET8Q==
   dependencies:
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/database" "^2.0.0-beta.3"
-    "@zkopru/transaction" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/database" "^2.0.0-beta.4"
+    "@zkopru/transaction" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     bip39 "^3.0.2"
     circomlib "0.5.1"
     hdkey "^1.1.1"
@@ -3110,12 +3110,12 @@
     web3-eth-accounts "1.2.11"
     web3-utils "1.2.11"
 
-"@zkopru/babyjubjub@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/babyjubjub/-/babyjubjub-2.0.0-beta.3.tgz#eb660eb18ca008b9ee855d25cc9319561cafd7db"
-  integrity sha512-veGlerBOhXZRZ8u9CrQTcjDfOLJyV8S3kHZQ1geQqh668uBkkn1uFiTFZvO+7RVi8DcYWO/wXcl2ETs5iFzpPw==
+"@zkopru/babyjubjub@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/babyjubjub/-/babyjubjub-2.0.0-beta.4.tgz#c0a17ca2a364ed742db29b9140a9854da54b948f"
+  integrity sha512-LRQaSFiBBqYBnAqw+iHCDWO4GvqtUKyKSnWjC3oQglOManSP9Tv3qS/nXft3zNzYFWIxaocSCmbluHKchHdvdw==
   dependencies:
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/utils" "^2.0.0-beta.4"
     big-integer "^1.6.48"
     blake-hash "^1.1.0"
     bn.js "^5.2.0"
@@ -3124,19 +3124,19 @@
     soltypes "^1.3.5"
     web3-utils "1.2.11"
 
-"@zkopru/client@2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/client/-/client-2.0.0-beta.3.tgz#192ebd45887ecd607b9dc4d04bdf73926004e0c3"
-  integrity sha512-J9i+mb3XepIJe30Jdq5pHNWmfYvcilWSnriYhM2oHE0f57mSg7xzZDnPxU/LNOfEOEucpzWsHpVFaZbM16kVCQ==
+"@zkopru/client@2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/client/-/client-2.0.0-beta.4.tgz#c5efe47911f10db93ca174fab85e7a3bce9f34f6"
+  integrity sha512-50D0LIhdhNB7q4ixanUhNGfoCtl3Pjn6k6WeSs8bmAt460T65xTKcBPSK1yduCWotY3aFHjOHf7VBiq+sCvKOg==
   dependencies:
-    "@zkopru/account" "^2.0.0-beta.3"
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/contracts" "^2.0.0-beta.3"
-    "@zkopru/coordinator" "^2.0.0-beta.3"
-    "@zkopru/core" "^2.0.0-beta.3"
-    "@zkopru/database" "^2.0.0-beta.3"
-    "@zkopru/transaction" "^2.0.0-beta.3"
-    "@zkopru/zk-wizard" "^2.0.0-beta.3"
+    "@zkopru/account" "^2.0.0-beta.4"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/contracts" "^2.0.0-beta.4"
+    "@zkopru/coordinator" "^2.0.0-beta.4"
+    "@zkopru/core" "^2.0.0-beta.4"
+    "@zkopru/database" "^2.0.0-beta.4"
+    "@zkopru/transaction" "^2.0.0-beta.4"
+    "@zkopru/zk-wizard" "^2.0.0-beta.4"
     assert "^2.0.0"
     browserify-zlib "^0.2.0"
     buffer "^6.0.3"
@@ -3154,14 +3154,14 @@
     webpack "^5.26.2"
     webpack-cli "^4.5.0"
 
-"@zkopru/contracts@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/contracts/-/contracts-2.0.0-beta.3.tgz#4d938e14b55589f6f585da4f2e6817f429ed0914"
-  integrity sha512-EBA41c5dZ0Oz+l9ER65wl3GykEVgWqAAxbmVYusX6uu8Ntc1de/B7B6K8nwosVH5PS0Z9NgaGfuhnz9pZZJj6A==
+"@zkopru/contracts@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/contracts/-/contracts-2.0.0-beta.4.tgz#7d12807bfc7021421fc2652d18f3478e09dc79bc"
+  integrity sha512-p2jAcpjtlP++Sx2xDVIOioKgEVxD9UTq9luYsAaxDvApPDKGk/vpK6adEMYA3orDPCaBKXhOgRXk4Wl00WZ8Sg==
   dependencies:
     "@ethereumjs/tx" "3.2.0"
     "@openzeppelin/contracts" "3.4.1"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/utils" "^2.0.0-beta.4"
     bn.js "^5.2.0"
     ganache-time-traveler "^1.0.15"
     soltypes "^1.3.5"
@@ -3169,18 +3169,18 @@
     web3-core "1.2.11"
     web3-eth-contract "1.2.11"
 
-"@zkopru/coordinator@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/coordinator/-/coordinator-2.0.0-beta.3.tgz#803cdbfb4ab99eb848c270151d1c0c72dc9fc9bd"
-  integrity sha512-/dTHva5h0JUSkArMWa97p18Ef8JZ2O8VzmFM/YSvDXorQCPZhskLo3yQaLI1Hn3YtMM5bKdk19sx7iKoUj6xyA==
+"@zkopru/coordinator@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/coordinator/-/coordinator-2.0.0-beta.4.tgz#8f0e4af5611a441a353ba5708a9ff7ab0c4ff4fb"
+  integrity sha512-s+nx38FsMkY/h2b+WJVkox99clS3G84tuMZtpqZZ9u4t6UjWik+rNe1NXH1w0p3V3cBka90Y2Axfq7ABVZMhWQ==
   dependencies:
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/contracts" "^2.0.0-beta.3"
-    "@zkopru/core" "^2.0.0-beta.3"
-    "@zkopru/database" "^2.0.0-beta.3"
-    "@zkopru/transaction" "^2.0.0-beta.3"
-    "@zkopru/tree" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/contracts" "^2.0.0-beta.4"
+    "@zkopru/core" "^2.0.0-beta.4"
+    "@zkopru/database" "^2.0.0-beta.4"
+    "@zkopru/transaction" "^2.0.0-beta.4"
+    "@zkopru/tree" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     async-lock "^1.2.2"
     axios "^0.21.1"
     big-integer "^1.6.48"
@@ -3205,18 +3205,18 @@
     web3-utils "1.2.11"
     yargs "^15.3.1"
 
-"@zkopru/core@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/core/-/core-2.0.0-beta.3.tgz#2bb9aafc34d7283b6994b239c637497defd1701f"
-  integrity sha512-NlQa+RcC8UWvzvKBnwG/ApTtreMXVflFBk1rgg5svb6//GkP5nw5zD/+zkWnGS2RIOmHRvMwL6xu+S+rm8Wi5Q==
+"@zkopru/core@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/core/-/core-2.0.0-beta.4.tgz#9db7d0aca4390f36d18f337cffa52fc65d59e33c"
+  integrity sha512-qjwHikRiVB/EBMkfFk9NPckzQxEI482dYw3mlK9ABY8SV5YpZFHBmGsh8Vhdmt4bOu+eKxyz1q91o49LXxnlTg==
   dependencies:
-    "@zkopru/account" "^2.0.0-beta.3"
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/contracts" "^2.0.0-beta.3"
-    "@zkopru/database" "^2.0.0-beta.3"
-    "@zkopru/transaction" "^2.0.0-beta.3"
-    "@zkopru/tree" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/account" "^2.0.0-beta.4"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/contracts" "^2.0.0-beta.4"
+    "@zkopru/database" "^2.0.0-beta.4"
+    "@zkopru/transaction" "^2.0.0-beta.4"
+    "@zkopru/tree" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     async-lock "^1.2.2"
     big-integer "^1.6.48"
     bn.js "^5.2.0"
@@ -3233,13 +3233,13 @@
     web3-utils "1.2.11"
     winston "^3.2.1"
 
-"@zkopru/database@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/database/-/database-2.0.0-beta.3.tgz#b53556371be4a86d4af90d17dfad157cde44f742"
-  integrity sha512-wl12cwyg/NZAUxgRPN9bbiSjwJ1gtLlYNG65YjPPgyalw8T8BJ+gei3EcsGwuVW1FOAs65iIPgY4cKrkZQvC2Q==
+"@zkopru/database@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/database/-/database-2.0.0-beta.4.tgz#fe0b292e214468796f7f83d4f0d16a72acc71b9d"
+  integrity sha512-AkUqV190tRpPEOLmfbEvvgsQepJfIZO99KtFmOWS0ULgaaewNFsYBMTbS/qypNjFZajRYgVkt/8DUfYlmD6fdQ==
   dependencies:
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     async-lock "^1.2.11"
     bn.js "^5.2.0"
     fake-indexeddb "^3.1.2"
@@ -3251,13 +3251,13 @@
     uuid "^8.3.2"
     web3 "^1.3.4"
 
-"@zkopru/transaction@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/transaction/-/transaction-2.0.0-beta.3.tgz#071689508277cf1b34a7a838abf0178c255f3453"
-  integrity sha512-AGEiuoo+TpBJeQ9xyOTP4kUPkwYDPpElL1ZB585IY1iCv6SwxOUzCWZ9Si+PSFEz1/T6IF7nPYQf5xe3U+iPYA==
+"@zkopru/transaction@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/transaction/-/transaction-2.0.0-beta.4.tgz#8ec4b8eb48b3d0f46a7b30161ac488ef8bd2cfdc"
+  integrity sha512-CBxDwEODa4JdsEdCdtBbd+IysaVjfwsL2HhcKLx3Dn/zkpCXOJdtXpmRPo0kC7MzmeNwQC3CcN0G/PA6BTQFxg==
   dependencies:
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     big-integer "^1.6.48"
     bs58 "^4.0.1"
     chacha20 "^0.1.4"
@@ -3268,15 +3268,15 @@
     web3-eth-abi "1.2.11"
     web3-utils "1.2.11"
 
-"@zkopru/tree@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/tree/-/tree-2.0.0-beta.3.tgz#bb7d097b577be1f318170e8eb62ff7fdc052e9dc"
-  integrity sha512-2QoQqTMThdccw6nhsnt7uo7HGHCpxZ867dPicr+dSQuyqJh8nHtujQ9FDj8IwAIksr23grOLlgKVoN1XgArjPw==
+"@zkopru/tree@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/tree/-/tree-2.0.0-beta.4.tgz#2a740cb32e294f059df33e77c7ddaac68d7cf49b"
+  integrity sha512-KvqhdBFC1Ijm1IbEAjyc4hfUaTxXnzUtL1q4Wl5nAcP1RyFMNyJXQbw+FdoF4hKxascM3rCaQFjY4zCEIuoVUw==
   dependencies:
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/database" "^2.0.0-beta.3"
-    "@zkopru/transaction" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/database" "^2.0.0-beta.4"
+    "@zkopru/transaction" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     async-lock "^1.2.2"
     big-integer "^1.6.48"
     bn.js "^5.2.0"
@@ -3286,10 +3286,10 @@
     uuid "^8.1.0"
     web3-utils "1.2.11"
 
-"@zkopru/utils@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/utils/-/utils-2.0.0-beta.3.tgz#1990a3feb6bd0a79a41ec47816fbeacc4f7f6f82"
-  integrity sha512-9lXsm076PwU+NKBWzXMmp0vXujWBcNGmxfdJRDtK3jiwNL7gL0v9j3IFAM9nWq2tCM7P4331A//IQoExqJtLVg==
+"@zkopru/utils@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/utils/-/utils-2.0.0-beta.4.tgz#b3be813af8798b1a5b79480bcc4b16cb65d0636a"
+  integrity sha512-B3BgAzKHK7+XNIkfhUrhEDstgHcHtakycTBRAF7jEDDIxXYE7u9NFy5T90fgraKt5UtsXya1W4B+5sMpoQ0WRQ==
   dependencies:
     axios "^0.21.1"
     bn.js "^5.2.0"
@@ -3304,19 +3304,19 @@
     web3-eth-abi "1.2.11"
     web3-utils "1.2.11"
 
-"@zkopru/zk-wizard@^2.0.0-beta.3":
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@zkopru/zk-wizard/-/zk-wizard-2.0.0-beta.3.tgz#f2eeeb1784729b540433eb70b6fb9e1b90b53c49"
-  integrity sha512-fnQqoGc2+Qkno1lAP1aWoR28sP7RRDSVw2cnl3bqX13f2BFMn1EZY3AHCeLDC34ZDBukhB0vicT4bIpt0+dlYQ==
+"@zkopru/zk-wizard@^2.0.0-beta.4":
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@zkopru/zk-wizard/-/zk-wizard-2.0.0-beta.4.tgz#096305539715e242fb06bc013cdcf0722fe45b49"
+  integrity sha512-RiNtADIOZNxMpyQ+SsBxfV/65olnNm2x4ndq4EpaocySsUfsUyEESHGb/IMbHwecZl7RkFozVw0MNOufcthSLA==
   dependencies:
-    "@zkopru/account" "^2.0.0-beta.3"
-    "@zkopru/babyjubjub" "^2.0.0-beta.3"
-    "@zkopru/contracts" "^2.0.0-beta.3"
-    "@zkopru/core" "^2.0.0-beta.3"
-    "@zkopru/database" "^2.0.0-beta.3"
-    "@zkopru/transaction" "^2.0.0-beta.3"
-    "@zkopru/tree" "^2.0.0-beta.3"
-    "@zkopru/utils" "^2.0.0-beta.3"
+    "@zkopru/account" "^2.0.0-beta.4"
+    "@zkopru/babyjubjub" "^2.0.0-beta.4"
+    "@zkopru/contracts" "^2.0.0-beta.4"
+    "@zkopru/core" "^2.0.0-beta.4"
+    "@zkopru/database" "^2.0.0-beta.4"
+    "@zkopru/transaction" "^2.0.0-beta.4"
+    "@zkopru/tree" "^2.0.0-beta.4"
+    "@zkopru/utils" "^2.0.0-beta.4"
     big-integer "^1.6.48"
     circom_runtime "0.1.13"
     eth-sig-util "^3.0.1"
@@ -4120,9 +4120,9 @@ blake2b-wasm@^1.1.0:
   dependencies:
     nanoassert "^1.0.0"
 
-"blake2b-wasm@git+https://github.com/jbaylina/blake2b-wasm.git":
+"blake2b-wasm@https://github.com/jbaylina/blake2b-wasm.git":
   version "2.1.0"
-  resolved "git+https://github.com/jbaylina/blake2b-wasm.git#0d5f024b212429c7f50a7f533aa3a2406b5b42b3"
+  resolved "https://github.com/jbaylina/blake2b-wasm.git#0d5f024b212429c7f50a7f533aa3a2406b5b42b3"
   dependencies:
     nanoassert "^1.0.0"
 
@@ -5779,6 +5779,11 @@ detect-port-alt@1.1.6:
   dependencies:
     address "^1.0.1"
     debug "^2.6.0"
+
+dexie@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/dexie/-/dexie-3.0.3.tgz#ede63849dfe5f07e13e99bb72a040e8ac1d29dab"
+  integrity sha512-BSFhGpngnCl1DOr+8YNwBDobRMH0ziJs2vts69VilwetHYOtEDcLqo7d/XiIphM0tJZ2rPPyAGd31lgH2Ln3nw==
 
 diff-sequences@^26.6.2:
   version "26.6.2"
