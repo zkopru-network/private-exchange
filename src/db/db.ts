@@ -1,11 +1,12 @@
 import Dexie from 'dexie'
 
 export interface IAdvertisementForm {
-  id?: number
+  adId: number
   currency1: string
   currency2: string
   amount: number
   receiveAmount: number
+  exchanged: boolean
 }
 
 class DB extends Dexie {
@@ -15,7 +16,8 @@ class DB extends Dexie {
     super('PrivateExchange')
 
     this.version(1).stores({
-      advertisements: '++id, currency1, currency2, amount, receiveAmount'
+      advertisements:
+        'adId, currency1, currency2, amount, receiveAmount, exchanged'
     })
 
     this.advertisements = this.table('advertisements')

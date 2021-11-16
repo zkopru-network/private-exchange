@@ -6,18 +6,21 @@ import { PeekABook__factory } from '../typechain'
 import { pairNameAndBuyOrSell } from '../utils/advertisement'
 import { TypedEvent } from '../typechain/commons'
 import AdvertisementEntity from '../db/Advertisement'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import useZkopruStore from '../store/zkopru'
 import usePeerStore from '../store/peer'
 import { useListenSmp } from './smp'
-import { toUnscaled } from '../utils/bn'
+import { toScaled } from '../utils/bn'
 import { Tokens } from '../constants'
 
-type AdvertiseParams = {
+export type FormData = {
   currency1: string
   currency2: string
-  amount: BigNumber
-  receiveAmount: BigNumber
+  amount: number
+  receiveAmount: number
+}
+
+export type AdvertiseParams = FormData & {
   peerId: string
 }
 
@@ -41,32 +44,25 @@ export function useAdvertiseMutation() {
       const signer = library.getSigner()
       const contract = PeekABook__factory.connect(addresses.PeekABook, signer)
       const { pairName, buyOrSell } = pairNameAndBuyOrSell(currency1, currency2)
+      const scaledAmount = toScaled(amount, Tokens[currency1].decimals)
 
-      const tx = await contract.advertise(pairName, buyOrSell, amount, peerId)
+      const tx = await contract.advertise(
+        pairName,
+        buyOrSell,
+        scaledAmount,
+        peerId
+      )
       const res = await tx.wait()
       const args = res.events?.[0].args
-      if (args) {
-        const ad = {
-          adID: args[0] as BigNumber,
-          pairIndex: args[1],
-          pair: args[2],
-          buyOrSell: args[3],
-          amount: args[4] as BigNumber,
-          peerID: args[5],
-          advertiser: args[6]
-        }
-
+      if (res.status === 1 && args) {
         console.log('saving advertisement...')
-        const unscaledAmount = toUnscaled(amount, Tokens[currency1].decimals)
-        const unscaledReceiveAmount = toUnscaled(
-          receiveAmount,
-          Tokens[currency2].decimals
-        )
         await AdvertisementEntity.save({
+          adId: args[0].toNumber(),
           currency1,
           currency2,
-          amount: unscaledAmount,
-          receiveAmount: unscaledReceiveAmount
+          amount,
+          receiveAmount,
+          exchanged: false
         })
         console.log('advertisement saved.')
       }
@@ -148,9 +144,11 @@ export function useStartLoadExistingAd() {
         // wait until client is ready
         const ad = await AdvertisementEntity.findLatest()
 
-        if (ad) {
+        if (ad && !ad.exchanged) {
           console.log('ads existing. start listening smp')
           listen(ad)
+        } else {
+          console.log('ads do not exist.')
         }
       })()
     }
@@ -158,8 +156,5 @@ export function useStartLoadExistingAd() {
 }
 
 export function useUpdateAdvertisementMutation() {
-  return useMutation(async () => {
-    // do
-    console.log('update advertisement')
-  })
+  return useCallback(async (ad) => {}, [])
 }

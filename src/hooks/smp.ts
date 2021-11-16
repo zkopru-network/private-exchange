@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import useStore from '../store/zkopru'
 import usePeerStore, { PEER_STATUS } from '../store/peer'
 import { useSwap } from './swap'
-import { useUpdateAdvertisementMutation } from './advertisement'
+import { useUpdateAdvertisementMutation, FormData } from './advertisement'
 import { peerConfig, Tokens } from '../constants'
 import { pow10, toScaled } from '../utils/bn'
 
@@ -39,11 +39,8 @@ export function useSmp() {
   )
 }
 
-type FormData = {
-  currency1: string
-  currency2: string
-  amount: number
-  receiveAmount: number
+type ListenParams = FormData & {
+  adId: number
 }
 
 export function useListenSmp() {
@@ -51,7 +48,7 @@ export function useListenSmp() {
   const swapMutation = useSwap()
   const updateAdvertisement = useUpdateAdvertisementMutation()
 
-  return useCallback(async (data: FormData) => {
+  return useCallback(async (data: ListenParams) => {
     const peerId = useStore.getState().zkAddress as string
     const scaledAmount = toScaled(data.amount, Tokens[data.currency1].decimals)
     const scaledReceiveAmount = toScaled(
@@ -83,7 +80,14 @@ export function useListenSmp() {
           })
           toast.success('Successfully create swap transaction.')
 
-          await updateAdvertisement.mutateAsync()
+          const newAd = {
+            ...data,
+            exchanged: true
+          }
+          await updateAdvertisement(newAd)
+          peer.disconnect()
+          store.setPeer(null)
+          store.setPeerStatus(PEER_STATUS.OFF)
         } catch (e) {
           toast.error('Creating swap transaction failed.')
         }
