@@ -52,21 +52,6 @@ export function useAdvertiseMutation() {
         scaledAmount,
         peerId
       )
-      const res = await tx.wait()
-      const args = res.events?.[0].args
-      if (res.status === 1 && args) {
-        console.log('saving advertisement...')
-        await AdvertisementEntity.save({
-          adId: args[0].toNumber(),
-          currency1,
-          currency2,
-          amount,
-          receiveAmount,
-          exchanged: false
-        })
-        console.log('advertisement saved.')
-      }
-
       return tx
     }
   )
@@ -156,5 +141,35 @@ export function useStartLoadExistingAd() {
 }
 
 export function useUpdateAdvertisementMutation() {
-  return useCallback(async (ad) => {}, [])
+  const addresses = useAddresses()
+  const { library } = useWeb3React<providers.Web3Provider>()
+  const advertise = useAdvertiseMutation()
+
+  return useCallback(
+    async ({
+      currency1,
+      currency2,
+      adId,
+      amount,
+      peerId,
+      receiveAmount
+    }: AdvertiseParams & { adId: number }) => {
+      if (!addresses || !library)
+        throw new Error('Cannot call update advertisement')
+      const signer = library.getSigner()
+      const contract = PeekABook__factory.connect(addresses.PeekABook, signer)
+
+      const invalidateTx = await contract.invalidate(adId)
+      await invalidateTx.wait()
+
+      await advertise.mutateAsync({
+        currency1,
+        currency2,
+        amount,
+        receiveAmount,
+        peerId
+      })
+    },
+    [addresses, library, advertise]
+  )
 }

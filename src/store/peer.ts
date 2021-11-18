@@ -1,5 +1,5 @@
 import create from 'zustand'
-import SMPPeer from 'js-smp-peer'
+import SMPPeer from 'js-smp-peer2'
 
 export enum PEER_STATUS {
   OFF,

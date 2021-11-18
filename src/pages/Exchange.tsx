@@ -6,22 +6,21 @@ import Title from '../components/Title'
 import { Input, Label, FormControl, FormValue } from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
-import { useSmp } from '../hooks/smp'
+import { useRunSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
-import { RADIUS, SPACE, Tokens } from '../constants'
+import { FONT_SIZE, RADIUS, SPACE, Tokens } from '../constants'
 import { toScaled, pow10 } from '../utils/bn'
 import { shortAddressString } from '../utils/string'
 
 const Exchange = () => {
   // extract url params. always match path.
-  const [match, params] = useRoute('/exchange/:id')
+  const params = useRoute('/exchange/:id')[1]
   const [sendAmount, setSendAmount] = useState(0)
+  const [receiveAmount, setReceiveAmount] = useState(0)
   const id: string = (params as any).id
 
-  // TODO:
   const ad = useAdvertisementQuery(id)
-  // use exchange mutation
-  const smpMutation = useSmp()
+  const smpMutation = useRunSmp()
   const swapMutation = useSwap()
 
   const runSMP = async () => {
@@ -39,29 +38,37 @@ const Exchange = () => {
     const receiveTokenSymbol = buyOrSell ? currency2 : currency1
     const sendToken = Tokens[sendTokenSymbol].address
     const receiveToken = Tokens[receiveTokenSymbol].address
-
     const sendDecimals = Tokens[sendTokenSymbol].decimals
     const receiveDecimals = Tokens[receiveTokenSymbol].decimals
+
     const price = toScaled(sendAmount, sendDecimals)
       .mul(pow10(receiveDecimals))
-      .div(advertisement.amount)
+      .div(toScaled(receiveAmount, receiveDecimals))
 
     const smpResult = await smpMutation.mutateAsync({
       price: price.toString(),
-      counterpartyId: counterParty
+      counterpartyId: counterParty,
+      amount: receiveAmount
     })
-    toast(`Finish running smp. Result: ${smpResult ? 'Success' : 'Failed'}`)
+    toast(
+      `Finish running smp. Result: ${
+        smpResult.result ? 'Success' : 'Failed'
+      }: Amount: ${smpResult.negotiatedAmount}`
+    )
 
-    if (smpResult) {
+    if (smpResult.result) {
       try {
-        toast('Creating swap transaction.')
-        // TODO: make amount BigNumber after getting token info from contract.
+        const receive = toScaled(smpResult.negotiatedAmount, receiveDecimals)
+        const send = price.mul(receive).div(pow10(receiveDecimals))
+        toast(
+          `Creating swap transaction. send ${sendTokenSymbol}: ${send.toString()}, receive ${receiveTokenSymbol}: ${receive.toString()}`
+        )
         await swapMutation.mutateAsync({
           counterParty,
           sendToken,
           receiveToken,
-          receiveAmount: advertisement.amount, // scaled
-          sendAmount: toScaled(sendAmount, sendDecimals)
+          receiveAmount: receive,
+          sendAmount: send
         })
         toast.success('Successfully created swap transaction.')
       } catch (e) {
@@ -121,7 +128,13 @@ const Exchange = () => {
           <Label>
             Amount Receive({advertisement.buyOrSell ? currency2 : currency1})
           </Label>
-          <FormValue>{advertisement.amount.toString()}</FormValue>
+          {/* TODO: validate form */}
+          <Input
+            placeholder="0.0"
+            type="number"
+            onChange={(e) => setReceiveAmount(Number(e.target.value))}
+          />
+          <FootNote>Max: {advertisement.amount.toString()}</FootNote>
         </FormControl>
         <FormControl>
           <Label>
@@ -159,6 +172,10 @@ const FormContainer = styled.div`
 const HeadLink = styled.a`
   cursor: pointer;
   font-weight: 600;
+`
+
+const FootNote = styled.span`
+  font-size: ${FONT_SIZE.S};
 `
 
 export default Exchange

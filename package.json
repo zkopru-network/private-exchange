@@ -19,6 +19,7 @@
     "fuse.js": "^6.4.6",
     "js-sha512": "^0.8.0",
     "js-smp-peer": "^0.0.9",
+    "js-smp-peer2": "^0.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.14.2",

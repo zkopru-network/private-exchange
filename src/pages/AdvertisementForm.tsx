@@ -14,6 +14,7 @@ import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
+import AdvertisementEntity from '../db/Advertisement'
 
 const AdvertisementForm = () => {
   const [submitting, setSubmitting] = useState(false)
@@ -44,6 +45,17 @@ const AdvertisementForm = () => {
       if (receipt.status === 1) {
         const adId = receipt.events?.[0].args?.[0] as number
         toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
+
+        // save db
+        if (receipt.status === 1 && adId) {
+          console.log('saving advertisement...')
+          await AdvertisementEntity.save({
+            ...data,
+            adId,
+            exchanged: false
+          })
+          console.log('advertisement saved.')
+        }
         setSubmitting(false)
         await listenSmp({ ...data, adId })
       } else {
