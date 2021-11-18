@@ -157,6 +157,8 @@ export function useUpdateStatus() {
 
     const state = useStore.getState()
 
+    // TODO: update history if any pending tx
+
     if (state.latestBlock > 0) {
       const newPercent =
         (100 * +state.latestBlock) / (+state.proposalCount - state.uncleCount)

@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useMutation } from 'react-query'
 import SMPPeer from 'js-smp-peer2'
 import toast from 'react-hot-toast'
+import dayjs from 'dayjs'
 import useStore from '../store/zkopru'
 import usePeerStore, { PEER_STATUS } from '../store/peer'
 import { useSwap } from './swap'
@@ -9,6 +10,7 @@ import { useUpdateAdvertisementMutation, FormData } from './advertisement'
 import { peerConfig, Tokens } from '../constants'
 import { pow10, toScaled, toUnscaled } from '../utils/bn'
 import AdvertisementEntity from '../db/Advertisement'
+import HistoryEntity, { HistoryType } from '../db/History'
 
 type SMPParams = {
   price: string
@@ -32,13 +34,7 @@ export function useRunSmp() {
       const peer = new SMPPeer(price, amount, peerId, peerConfig)
       await peer.connectToPeerServer()
 
-      const result = await peer.runSMP(counterpartyId)
-
-      console.log(
-        `Finish running SMP with peer: ${counterpartyId}, result=${result}`
-      )
-
-      return result
+      return await peer.runSMP(counterpartyId)
     }
   )
 }
@@ -108,7 +104,16 @@ export function useListenSmp() {
             peer.disconnect()
             store.setPeer(null)
             store.setPeerStatus(PEER_STATUS.OFF)
-            // TODO: save history match maked
+
+            // update pending to false when swap tx is included in zkopru
+            await HistoryEntity.save({
+              historyType: HistoryType.MatchMade,
+              timestamp: dayjs().unix(),
+              ...data,
+              amount: toUnscaled(send, sendDecimals),
+              receiveAmount: toUnscaled(receive, receiveDecimals),
+              pending: true
+            })
 
             // rest amount: data.amount - send
             // update ads on-chain using this send amount

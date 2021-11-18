@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
 import toast from 'react-hot-toast'
+import dayjs from 'dayjs'
 import Title from '../components/Title'
 import { Input, Label, FormControl, FormValue } from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
@@ -9,8 +10,9 @@ import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
 import { useRunSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
 import { FONT_SIZE, RADIUS, SPACE, Tokens } from '../constants'
-import { toScaled, pow10 } from '../utils/bn'
+import { toScaled, pow10, toUnscaled } from '../utils/bn'
 import { shortAddressString } from '../utils/string'
+import HistoryEntity, { HistoryType } from '../db/History'
 
 const Exchange = () => {
   // extract url params. always match path.
@@ -71,9 +73,29 @@ const Exchange = () => {
           sendAmount: send
         })
         toast.success('Successfully created swap transaction.')
+        await HistoryEntity.save({
+          historyType: HistoryType.MatchMade,
+          timestamp: dayjs().unix(),
+          adId: Number(id),
+          currency1: sendTokenSymbol,
+          currency2: receiveTokenSymbol,
+          amount: toUnscaled(send, sendDecimals),
+          receiveAmount: toUnscaled(receive, receiveDecimals),
+          pending: true
+        })
       } catch (e) {
         toast.error('Failed to create swap transaction.')
       }
+    } else {
+      await HistoryEntity.save({
+        historyType: HistoryType.MatchFailed,
+        timestamp: dayjs().unix(),
+        adId: Number(id),
+        currency1: sendTokenSymbol,
+        currency2: receiveTokenSymbol,
+        amount: sendAmount,
+        receiveAmount: receiveAmount
+      })
     }
   }
 

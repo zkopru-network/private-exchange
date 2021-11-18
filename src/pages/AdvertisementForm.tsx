@@ -4,6 +4,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
+import dayjs from 'dayjs'
 import { useAdvertiseMutation, FormData } from '../hooks/advertisement'
 import { useListenSmp } from '../hooks/smp'
 import useZkopruStore from '../store/zkopru'
@@ -15,6 +16,7 @@ import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
 import AdvertisementEntity from '../db/Advertisement'
+import HistoryEntity, { HistoryType } from '../db/History'
 
 const AdvertisementForm = () => {
   const [submitting, setSubmitting] = useState(false)
@@ -58,6 +60,12 @@ const AdvertisementForm = () => {
         }
         setSubmitting(false)
         await listenSmp({ ...data, adId })
+        await HistoryEntity.save({
+          historyType: HistoryType.MakeAd,
+          timestamp: dayjs().unix(),
+          adId,
+          ...data
+        })
       } else {
         toast.error('Advertise transaction failed...', { icon: '😥' })
         setSubmitting(false)
