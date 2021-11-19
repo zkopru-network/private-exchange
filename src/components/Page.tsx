@@ -14,7 +14,7 @@ export const PageHead = styled.div`
 export const PageBody = styled.div`
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.onSurface};
-  box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
+  border: solid 1px ${({ theme }) => theme.border};
   border-radius: ${RADIUS.M};
   padding: ${SPACE.M};
 `

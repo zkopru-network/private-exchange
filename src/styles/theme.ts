@@ -1,6 +1,7 @@
 export type Theme = {
   background: string
   surface: string
+  surface2: string
   primary: string
   secondary: string
   border: string
@@ -19,21 +20,22 @@ export type Theme = {
 }
 
 const theme: Theme = {
-  background: '#F8F9FF',
-  surface: '#FFFFFF',
+  background: '#05141A',
+  surface: '#081B24',
+  surface2: '#192C35',
   error: '#ff0f0f',
   warning: '#f4512c',
-  primary: '#9473d4',
+  primary: '#A2EfE1',
   secondary: '#c9e977',
-  border: '#bebebe',
+  border: '#2A3D46',
   disabled: 'gray',
   control: '#e8dcff',
   shadow: 'gray',
-  onBackground: '#000000',
-  onSurface: '#000000',
+  onBackground: '#95A7AE',
+  onSurface: '#FFFFFF',
   onError: '#FFFFFF',
   onWarning: '#FFFFFF',
-  onPrimary: '#FFFFFF',
+  onPrimary: 'black',
   onSecondary: '#000000',
   onDisabled: '#FFFFFF'
 }
