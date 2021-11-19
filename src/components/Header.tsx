@@ -18,6 +18,7 @@ const Header = () => {
         <div>
           <HeaderLink href="/">Home</HeaderLink>
           <HeaderLink href="/advertise">Advertise</HeaderLink>
+          <HeaderLink href="/history">History</HeaderLink>
         </div>
         <div>
           {active && account ? (

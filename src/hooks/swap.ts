@@ -27,9 +27,7 @@ export function useSwap() {
       const { account } = wallet.wallet
       if (!account) throw new Error('zkAccount not set')
 
-      // TODO: set fee from input
-      // const fee = await wallet.loadCurrentPrice()
-      const fee = '72000000144'
+      const fee = await wallet.loadCurrentPrice()
 
       // check how it works.
       const salt = randomHex(16)
@@ -49,7 +47,6 @@ export function useSwap() {
       } catch (e) {
         console.error(e)
       }
-      console.log('Finish sending swap transaction...')
     }
   )
 }

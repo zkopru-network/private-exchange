@@ -45,11 +45,11 @@ const AdvertisementForm = () => {
       })
       const receipt = await res.wait()
       if (receipt.status === 1) {
-        const adId = receipt.events?.[0].args?.[0] as number
+        const adId = receipt.events?.[0].args?.[0].toNumber()
         toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
 
         // save db
-        if (receipt.status === 1 && adId) {
+        if (adId) {
           console.log('saving advertisement...')
           await AdvertisementEntity.save({
             ...data,

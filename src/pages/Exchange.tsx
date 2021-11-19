@@ -6,10 +6,11 @@ import dayjs from 'dayjs'
 import Title from '../components/Title'
 import { Input, Label, FormControl, FormValue } from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
+import { PageContainer, PageBody, PageHead } from '../components/Page'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
 import { useRunSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
-import { FONT_SIZE, RADIUS, SPACE, Tokens } from '../constants'
+import { FONT_SIZE, Tokens } from '../constants'
 import { toScaled, pow10, toUnscaled } from '../utils/bn'
 import { shortAddressString } from '../utils/string'
 import HistoryEntity, { HistoryType } from '../db/History'
@@ -101,12 +102,12 @@ const Exchange = () => {
 
   if (ad.isLoading && !ad.data) {
     return (
-      <Container>
+      <PageContainer>
         <PageHead>
           <Title>Exchange</Title>
         </PageHead>
-        <FormContainer>Loading...</FormContainer>
-      </Container>
+        <PageBody>Loading...</PageBody>
+      </PageContainer>
     )
   }
 
@@ -114,7 +115,7 @@ const Exchange = () => {
   const [currency1, currency2] = advertisement.pair.split('/')
 
   return (
-    <Container>
+    <PageContainer>
       <PageHead>
         <Title>Exchange</Title>
         <HeadLink
@@ -125,7 +126,7 @@ const Exchange = () => {
           &larr; Back
         </HeadLink>
       </PageHead>
-      <FormContainer>
+      <PageBody>
         <FormControl>
           <Label>PeerID</Label>
           <FormValue>
@@ -169,27 +170,10 @@ const Exchange = () => {
           />
         </FormControl>
         <PrimaryButton onClick={runSMP}>Exchange</PrimaryButton>
-      </FormContainer>
-    </Container>
+      </PageBody>
+    </PageContainer>
   )
 }
-
-const Container = styled.div`
-  padding: ${SPACE.XL} ${SPACE.XXL};
-`
-const PageHead = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
-const FormContainer = styled.div`
-  background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
-  box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
-  border-radius: ${RADIUS.M};
-  padding: ${SPACE.M};
-`
 
 const HeadLink = styled.a`
   cursor: pointer;

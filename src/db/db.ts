@@ -29,17 +29,17 @@ export interface IHistory {
 }
 
 class DB extends Dexie {
-  advertisements: Dexie.Table<IAdvertisementForm, number>
-  histories: Dexie.Table<IHistory, number>
+  advertisements!: Dexie.Table<IAdvertisementForm>
+  histories!: Dexie.Table<IHistory, number>
 
   constructor() {
     super('PrivateExchange')
 
-    this.version(2).stores({
+    this.version(3).stores({
       advertisements:
         'adId, currency1, currency2, amount, receiveAmount, exchanged',
       histories:
-        '++id, historyType, adId, currency1, currency2, amount, receiveAmount, timestamp, pending'
+        '++id, historyType, adId, currency1, currency2, amount, receiveAmount, timestamp, pending, txHash'
     })
 
     this.advertisements = this.table('advertisements')
