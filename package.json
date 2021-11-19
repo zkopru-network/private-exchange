@@ -40,11 +40,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "bootstrap": "npm run docker:build && npm run docker:cp-address",
-    "docker:build": "docker build -t ganache --progress plain -f dockerfiles/Dockerfile .",
-    "docker:cp-address": "docker cp $(docker create ganache):/HOME/peek-a-book/address.json ./src/address.json",
-    "docker:start": "docker run -p 8545:8545 ganache"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
