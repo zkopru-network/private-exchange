@@ -1,17 +1,21 @@
-FROM node:14.17
+FROM node:lts
 
-
-ENV MNEMONIC='concert load couple harbor equip island argue ramp clarify fence smart topic'
-ENV NETWORK_ID=1337
-ENV CHAIN_ID=1337
-ENV SNAPSHOT_NAME=chain.db
+RUN apt-get update -y
 
 WORKDIR /HOME
+RUN git clone https://github.com/zkopru-network/zkopru.git
+WORKDIR /HOME/zkopru
 
-RUN npm i -g ganache-cli@6.12.1
-COPY dockerfiles/setup.sh setup.sh
+RUN git checkout main
 
-RUN /bin/sh setup.sh
+RUN yarn
+RUN yarn build
 
-EXPOSE 8545
-CMD ["sh", "-c", "ganache-cli --gasLimit 12000000 --noVMErrorsOnRPCResponse -p 8545 --keepAliveTimeout=40000 --db chain.db --networkId \"$NETWORK_ID\" --chainId \"$CHAIN_ID\" -m \"$MNEMONIC\" -h 0.0.0.0"]
+WORKDIR /HOME/zkopru/packages/circuits
+
+RUN yarn download-keys
+
+WORKDIR /HOME/zkopru/packages/cli
+COPY config.json config.json
+
+CMD ["yarn", "coordinator", "--config", "config.json", "-d"]

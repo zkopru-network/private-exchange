@@ -5,16 +5,22 @@ import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
 import { useAdvertiseMutation } from '../hooks/advertisement'
+import useZkopruStore from '../store/zkopru'
+import { toScaled } from '../utils/bn'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
-import { FONT_SIZE, RADIUS, SPACE } from '../constants'
+import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
+import { FONT_SIZE, RADIUS, SPACE, Tokens } from '../constants'
+import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
+import { useListenSmp } from '../hooks/smp'
 
 type FormData = {
   currency1: string
   currency2: string
   amount: number
+  receiveAmount: number
 }
 
 const AdvertisementForm = () => {
@@ -31,17 +37,36 @@ const AdvertisementForm = () => {
   const advertiseMutation = useAdvertiseMutation()
   const theme = useTheme()
   const { active } = useWeb3React()
+  const listenSmp = useListenSmp()
 
   const onSubmit = handleSubmit(async (data) => {
-    setSubmitting(true)
-    const res = await advertiseMutation.mutateAsync(data)
-    const receipt = await res.wait()
-    if (receipt.status === 1) {
-      toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
-    } else {
+    const peerId = useZkopruStore.getState().zkAddress as string
+    const scaledAmount = toScaled(data.amount, Tokens[data.currency1].decimals)
+
+    try {
+      setSubmitting(true)
+      const res = await advertiseMutation.mutateAsync({
+        ...data,
+        amount: scaledAmount,
+        peerId
+      })
+      const receipt = await res.wait()
+      if (receipt.status === 1) {
+        toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
+        setSubmitting(false)
+      } else {
+        toast.error('Advertise transaction failed...', { icon: '😥' })
+        setSubmitting(false)
+        return
+      }
+    } catch (e) {
+      console.log(e)
       toast.error('Advertise transaction failed...', { icon: '😥' })
+      setSubmitting(false)
+      return
     }
-    setSubmitting(false)
+
+    await listenSmp(data)
   })
 
   return (
@@ -86,9 +111,11 @@ const AdvertisementForm = () => {
                     onBlur={onBlur}
                   />
                 )}
-                rules={{ required: 'This field is required' }}
+                rules={{ required: true }}
               />
-              <ErrorMessage>{errors.currency1?.message || ''}</ErrorMessage>
+              <ErrorMessage>
+                {getFormErrorMessage(errors.currency1?.type)}
+              </ErrorMessage>
             </FormControl>
 
             <FormControl>
@@ -118,20 +145,46 @@ const AdvertisementForm = () => {
                     onBlur={onBlur}
                   />
                 )}
-                rules={{ required: 'This field is required' }}
+                rules={{ required: true }}
               />
 
-              <ErrorMessage>{errors.currency2?.message || ''}</ErrorMessage>
+              <ErrorMessage>
+                {getFormErrorMessage(errors.currency2?.type)}
+              </ErrorMessage>
             </FormControl>
 
             <FormControl>
-              <Label>Amount</Label>
+              <Label>Amount (Send token)</Label>
               <Input
-                {...register('amount', { required: 'This field is required' })}
+                {...register('amount', {
+                  required: true,
+                  validate: {
+                    positiveNumber: (v) => v > 0
+                  }
+                })}
                 placeholder="0.0"
                 error={!!errors.amount}
               />
-              <ErrorMessage>{errors.amount?.message || ''}</ErrorMessage>
+              <ErrorMessage>
+                {getFormErrorMessage(errors.amount?.type)}
+              </ErrorMessage>
+            </FormControl>
+
+            <FormControl>
+              <Label>Amount (Receive token)</Label>
+              <Input
+                {...register('receiveAmount', {
+                  required: true,
+                  validate: {
+                    positiveNumber: (v) => v > 0
+                  }
+                })}
+                placeholder="0.0"
+                error={!!errors.receiveAmount}
+              />
+              <ErrorMessage>
+                {getFormErrorMessage(errors.receiveAmount?.type)}
+              </ErrorMessage>
             </FormControl>
 
             {!active ? (
@@ -172,45 +225,12 @@ const HeadLink = styled.a`
   cursor: pointer;
   font-weight: 600;
 `
-
-const FormContainer = styled.div`
+export const FormContainer = styled.div`
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.onSurface};
   box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
   border-radius: ${RADIUS.M};
   padding: ${SPACE.M};
-`
-
-const FormControl = styled.div`
-  width: 100%;
-  margin: ${SPACE.M} 0px;
-
-  &:first-child {
-    margin-top: 0;
-  }
-`
-
-const Input = styled.input<{ error?: boolean }>`
-  font-size: ${FONT_SIZE.L};
-  padding: ${SPACE.XS} ${SPACE.S};
-  border-radius: ${RADIUS.M};
-  border: solid 1px ${({ theme }) => theme.border};
-  ${({ error, theme }) => (error ? `border-color: ${theme.error}` : '')};
-  width: 100%;
-`
-
-const Label = styled.label`
-  display: block;
-  font-size: ${FONT_SIZE.S};
-  font-weight: 600;
-  color: ${({ theme }) => theme.onBackground};
-  margin-bottom: ${SPACE.XS};
-`
-
-const ErrorMessage = styled.div`
-  color: ${({ theme }) => theme.error};
-  font-size: ${FONT_SIZE.S};
-  height: 12px;
 `
 
 const SubmitButton = styled(PrimaryButton)`

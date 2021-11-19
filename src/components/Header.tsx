@@ -5,25 +5,30 @@ import { useWeb3React } from '@web3-react/core'
 import ConnectWalletButton from './ConnectWalletButton'
 import { FONT_SIZE, SPACE, RADIUS } from '../constants'
 import { shortAddressString } from '../utils/string'
+import { useIsSupportedChain } from '../hooks/network'
 
 const Header = () => {
   const { account, active } = useWeb3React()
+  const supportedChain = useIsSupportedChain()
 
   return (
-    <HeaderContainer>
-      <Logo>PrivateExchange</Logo>
-      <div>
-        <HeaderLink href="/">Home</HeaderLink>
-        <HeaderLink href="/advertise">Advertise</HeaderLink>
-      </div>
-      <div>
-        {active && account ? (
-          <Account>{shortAddressString(account)}</Account>
-        ) : (
-          <ConnectWalletButton />
-        )}
-      </div>
-    </HeaderContainer>
+    <>
+      <HeaderContainer>
+        <Logo>PrivateExchange</Logo>
+        <div>
+          <HeaderLink href="/">Home</HeaderLink>
+          <HeaderLink href="/advertise">Advertise</HeaderLink>
+        </div>
+        <div>
+          {active && account ? (
+            <Account>{shortAddressString(account)}</Account>
+          ) : (
+            <ConnectWalletButton />
+          )}
+        </div>
+      </HeaderContainer>
+      {!supportedChain && <Notice>Current chain is not supported.</Notice>}
+    </>
   )
 }
 
@@ -57,6 +62,13 @@ const Account = styled.span`
   margin-right: ${SPACE.M};
   border-radius: ${RADIUS.L};
   box-shadow: 0px 1px 4px ${({ theme }) => theme.shadow};
+`
+
+const Notice = styled.div`
+  padding: ${SPACE.XS};
+  background-color: ${({ theme }) => theme.warning};
+  color: ${({ theme }) => theme.onWarning};
+  text-align: center;
 `
 
 export default Header

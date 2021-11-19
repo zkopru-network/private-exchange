@@ -5,6 +5,7 @@ export type Theme = {
   secondary: string
   border: string
   error: string
+  warning: string
   disabled: string
   control: string
   shadow: string
@@ -13,13 +14,15 @@ export type Theme = {
   onBackground: string
   onSurface: string
   onError: string
+  onWarning: string
   onDisabled: string
 }
 
 const theme: Theme = {
   background: '#F8F9FF',
   surface: '#FFFFFF',
-  error: '#ff0230',
+  error: '#ff0f0f',
+  warning: '#f4512c',
   primary: '#9473d4',
   secondary: '#c9e977',
   border: '#bebebe',
@@ -29,6 +32,7 @@ const theme: Theme = {
   onBackground: '#000000',
   onSurface: '#000000',
   onError: '#FFFFFF',
+  onWarning: '#FFFFFF',
   onPrimary: '#FFFFFF',
   onSecondary: '#000000',
   onDisabled: '#FFFFFF'

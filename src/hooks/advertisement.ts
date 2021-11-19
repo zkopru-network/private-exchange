@@ -9,7 +9,18 @@ import { TypedEvent } from '../typechain/commons'
 type AdvertiseParams = {
   currency1: string
   currency2: string
-  amount: number
+  amount: BigNumber
+  peerId: string
+}
+
+export type Advertisement = {
+  adID: BigNumber
+  pairIndex: string
+  pair: string
+  buyOrSell: boolean
+  amount: BigNumber
+  peerID: string
+  advertiser: string
 }
 
 export function useAdvertiseMutation() {
@@ -17,12 +28,11 @@ export function useAdvertiseMutation() {
   const { library } = useWeb3React<providers.Web3Provider>()
 
   return useMutation<ContractTransaction, Error, AdvertiseParams>(
-    async ({ currency1, currency2, amount }) => {
+    async ({ currency1, currency2, amount, peerId }) => {
       if (!library) throw new Error('getting provider failed. connect wallet')
       const signer = library.getSigner()
       const contract = PeekABook__factory.connect(addresses.PeekABook, signer)
       const { pairName, buyOrSell } = pairNameAndBuyOrSell(currency1, currency2)
-      const peerId = 'id' // todo: get peerId from hook
 
       return await contract.advertise(pairName, buyOrSell, amount, peerId)
     }
@@ -41,7 +51,7 @@ function parseAdvertisement(
       advertiser: string
     }
   >
-) {
+): Advertisement {
   return {
     adID: event.args.adID,
     pairIndex: event.args.pairIndex,
@@ -71,4 +81,20 @@ export function useAdvertisementsQuery() {
       enabled: !!library
     }
   )
+}
+
+export function useAdvertisementQuery(id: string) {
+  const advertisements = useAdvertisementsQuery()
+
+  return advertisements.data
+    ? {
+        isError: advertisements.isError,
+        isLoading: advertisements.isLoading,
+        data: advertisements.data.find((ad) => ad.adID.toString() === id)
+      }
+    : {
+        isError: advertisements.isError,
+        isLoading: advertisements.isLoading,
+        data: null
+      }
 }

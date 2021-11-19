@@ -15,8 +15,8 @@ const tokens = [
   {
     name: 'Test Token',
     symbol: 'TT',
-    dceimal: 4,
-    address: '0x2471942920adf662c140f612dbd4ca343805499d'
+    decimals: 4,
+    address: '0x1D7022f5B17d2F8B695918FB48fa1089C9f85401'
   }
 ]
 

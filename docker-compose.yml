@@ -1,0 +1,21 @@
+version: '3'
+services:
+  geth:
+    image: ethereum/client-go:stable
+    command: '--goerli --syncmode "light" --ws --ws.addr 0.0.0.0 --ws.origins "*" --http --http.addr 0.0.0.0 --http.api "eth,web3,txpool,net" --http.corsdomain "*" --http.vhosts "*"'
+    volumes:
+      - ./.ethereum:/root/.ethereum
+    ports:
+      - '8545:8545'
+      - '8546:8546'
+      - '30303:30303'
+  coordinator:
+    build:
+      context: ./
+      dockerfile: ./dockerfiles/Dockerfile
+    ports:
+      - '8888:8888'
+    volumes:
+      - ./coordinator_data:/home/coordinator_data
+    depends_on:
+      - geth
