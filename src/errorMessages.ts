@@ -1,6 +1,7 @@
 export const FORM_ERRORS = {
   required: 'This field is required',
-  positiveNumber: 'Value must be positive number'
+  positiveNumber: 'Value must be positive number',
+  exceedBalance: 'Amount exceeds balance'
 } as const
 
 export function getFormErrorMessage(errorType: string | undefined) {

@@ -24,15 +24,18 @@ const AdvertisementForm = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isValid }
   } = useForm<FormData>({
     mode: 'onChange'
   })
 
-  const advertiseMutation = useAdvertiseMutation()
   const theme = useTheme()
   const { active } = useWeb3React()
+  const zkopruStore = useZkopruStore()
+  const advertiseMutation = useAdvertiseMutation()
   const listenSmp = useListenSmp()
+  const fields = watch()
 
   const onSubmit = handleSubmit(async (data) => {
     const peerId = useZkopruStore.getState().zkAddress as string
@@ -169,7 +172,12 @@ const AdvertisementForm = () => {
                 {...register('amount', {
                   required: true,
                   validate: {
-                    positiveNumber: (v) => v > 0
+                    positiveNumber: (v) => v > 0,
+                    exceedBalance: (v) => {
+                      const balance =
+                        zkopruStore.tokenBalances[fields.currency1]
+                      return zkopruStore.l2BalanceLoaded && balance >= v
+                    }
                   }
                 })}
                 placeholder="0.0"

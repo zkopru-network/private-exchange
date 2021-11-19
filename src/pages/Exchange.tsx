@@ -2,36 +2,58 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
 import toast from 'react-hot-toast'
+import { useWeb3React } from '@web3-react/core'
+import { useForm } from 'react-hook-form'
 import dayjs from 'dayjs'
 import Title from '../components/Title'
-import { Input, Label, FormControl, FormValue } from '../components/Form'
+import {
+  Input,
+  Label,
+  FormControl,
+  ErrorMessage,
+  FormValue
+} from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
+import ConnectWalletButton from '../components/ConnectWalletButton'
 import { PageContainer, PageBody, PageHead } from '../components/Page'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
+import useZkopruStore from '../store/zkopru'
 import { useRunSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
-import { FONT_SIZE, Tokens } from '../constants'
+import { FONT_SIZE, SPACE, Tokens } from '../constants'
 import { toScaled, pow10, toUnscaled } from '../utils/bn'
 import { shortAddressString } from '../utils/string'
 import HistoryEntity, { HistoryType } from '../db/History'
+import { getFormErrorMessage } from '../errorMessages'
 
 const Exchange = () => {
   // extract url params. always match path.
   const params = useRoute('/exchange/:id')[1]
-  const [sendAmount, setSendAmount] = useState(0)
-  const [receiveAmount, setReceiveAmount] = useState(0)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid }
+  } = useForm<{
+    sendAmount: number
+    receiveAmount: number
+  }>({
+    mode: 'onChange'
+  })
+  const { active } = useWeb3React()
+  const [submitting, setSubmitting] = useState(false)
   const id: string = (params as any).id
-
+  const zkopruStore = useZkopruStore()
   const ad = useAdvertisementQuery(id)
   const smpMutation = useRunSmp()
   const swapMutation = useSwap()
 
-  const runSMP = async () => {
+  const runSMP = handleSubmit(async ({ sendAmount, receiveAmount }) => {
     const advertisement = ad?.data
     if (!advertisement) {
       console.error('ad not loaded.')
       return
     }
+    setSubmitting(true)
 
     toast('Starting smp....')
     const counterParty = advertisement.peerID
@@ -98,7 +120,8 @@ const Exchange = () => {
         receiveAmount: receiveAmount
       })
     }
-  }
+    setSubmitting(false)
+  })
 
   if (ad.isLoading && !ad.data) {
     return (
@@ -150,32 +173,64 @@ const Exchange = () => {
         <FormControl>
           <Label>
             Amount Receive({advertisement.buyOrSell ? currency2 : currency1})
+            <FootNote>
+              (Max:{' '}
+              {toUnscaled(
+                advertisement.amount,
+                Tokens[advertisement.buyOrSell ? currency2 : currency1].decimals
+              )}
+              )
+            </FootNote>
           </Label>
-          {/* TODO: validate form */}
           <Input
+            {...register('receiveAmount', {
+              required: true,
+              validate: {
+                positiveNumber: (v) => v > 0
+              }
+            })}
             placeholder="0.0"
-            type="number"
-            onChange={(e) => setReceiveAmount(Number(e.target.value))}
+            error={!!errors.receiveAmount}
           />
-          <FootNote>
-            Max:{' '}
-            {toUnscaled(
-              advertisement.amount,
-              Tokens[advertisement.buyOrSell ? currency2 : currency1].decimals
-            )}
-          </FootNote>
+          <ErrorMessage>
+            {getFormErrorMessage(errors.receiveAmount?.type)}
+          </ErrorMessage>
         </FormControl>
         <FormControl>
           <Label>
             Amount Send({advertisement.buyOrSell ? currency1 : currency2})
           </Label>
           <Input
+            {...register('sendAmount', {
+              required: true,
+              validate: {
+                positiveNumber: (v) => v > 0,
+                exceedBalance: (v) => {
+                  const balance =
+                    zkopruStore.tokenBalances[
+                      advertisement.buyOrSell ? currency1 : currency2
+                    ]
+                  return zkopruStore.l2BalanceLoaded && balance >= v
+                }
+              }
+            })}
             placeholder="0.0"
-            type="number"
-            onChange={(e) => setSendAmount(Number(e.target.value))}
+            error={!!errors.sendAmount}
           />
+          <ErrorMessage>
+            {getFormErrorMessage(errors.sendAmount?.type)}
+          </ErrorMessage>
         </FormControl>
-        <PrimaryButton onClick={runSMP}>Exchange</PrimaryButton>
+
+        {!active ? (
+          <ConnectWalletButton />
+        ) : !isValid ? (
+          <SubmitButton disabled>Fill the form</SubmitButton>
+        ) : submitting ? (
+          <SubmitButton disabled>Submitting...</SubmitButton>
+        ) : (
+          <SubmitButton onClick={runSMP}>Swap</SubmitButton>
+        )}
       </PageBody>
     </PageContainer>
   )
@@ -187,7 +242,16 @@ const HeadLink = styled.a`
 `
 
 const FootNote = styled.span`
+  margin-left: ${SPACE.S};
   font-size: ${FONT_SIZE.S};
+  font-weight: 500;
+`
+
+const SubmitButton = styled(PrimaryButton)`
+  font-size: ${FONT_SIZE.M};
+  font-weight: 600;
+  width: 100%;
+  padding: 12px;
 `
 
 export default Exchange
