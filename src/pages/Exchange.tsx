@@ -157,7 +157,13 @@ const Exchange = () => {
             type="number"
             onChange={(e) => setReceiveAmount(Number(e.target.value))}
           />
-          <FootNote>Max: {advertisement.amount.toString()}</FootNote>
+          <FootNote>
+            Max:{' '}
+            {toUnscaled(
+              advertisement.amount,
+              Tokens[advertisement.buyOrSell ? currency2 : currency1].decimals
+            )}
+          </FootNote>
         </FormControl>
         <FormControl>
           <Label>

@@ -4,9 +4,10 @@ import { Link, useLocation } from 'wouter'
 import Title from '../components/Title'
 import PrimaryButton from '../components/PrimaryButton'
 import { PageContainer, PageBody, PageHead } from '../components/Page'
-import { SPACE } from '../constants'
+import { SPACE, Tokens } from '../constants'
 import { useAdvertisementsQuery } from '../hooks/advertisement'
 import { shortAddressString } from '../utils/string'
+import { toUnscaled } from '../utils/bn'
 
 const AdvertisementList = () => {
   const advertisementQuery = useAdvertisementsQuery()
@@ -33,10 +34,16 @@ const AdvertisementList = () => {
         <div>
           {advertisementQuery.data &&
             advertisementQuery.data.map((ad) => {
+              const [currency1, currency2] = ad.pair.split('/')
               return (
                 <Row key={ad.adID.toHexString()}>
                   <Cell>{ad.pair}</Cell>
-                  <Cell>{ad.amount.toString()}</Cell>
+                  <Cell>
+                    {toUnscaled(
+                      ad.amount,
+                      Tokens[ad.buyOrSell ? currency2 : currency1].decimals
+                    )}
+                  </Cell>
                   <Cell>{ad.buyOrSell ? 'Buy' : 'Sell'}</Cell>
                   <Cell>{shortAddressString(ad.peerID)}</Cell>
                   <Cell>
