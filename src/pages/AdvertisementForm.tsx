@@ -4,24 +4,19 @@ import { useWeb3React } from '@web3-react/core'
 import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
-import { useAdvertiseMutation } from '../hooks/advertisement'
+import dayjs from 'dayjs'
+import { useAdvertiseMutation, FormData } from '../hooks/advertisement'
+import { useListenSmp } from '../hooks/smp'
 import useZkopruStore from '../store/zkopru'
-import { toScaled } from '../utils/bn'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
-import { FONT_SIZE, RADIUS, SPACE, Tokens } from '../constants'
+import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import tokens from '../tokenlist'
-import { useListenSmp } from '../hooks/smp'
-
-type FormData = {
-  currency1: string
-  currency2: string
-  amount: number
-  receiveAmount: number
-}
+import AdvertisementEntity from '../db/Advertisement'
+import HistoryEntity, { HistoryType } from '../db/History'
 
 const AdvertisementForm = () => {
   const [submitting, setSubmitting] = useState(false)
@@ -29,31 +24,51 @@ const AdvertisementForm = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isValid }
   } = useForm<FormData>({
     mode: 'onChange'
   })
 
-  const advertiseMutation = useAdvertiseMutation()
   const theme = useTheme()
   const { active } = useWeb3React()
+  const zkopruStore = useZkopruStore()
+  const advertiseMutation = useAdvertiseMutation()
   const listenSmp = useListenSmp()
+  const fields = watch()
 
   const onSubmit = handleSubmit(async (data) => {
     const peerId = useZkopruStore.getState().zkAddress as string
-    const scaledAmount = toScaled(data.amount, Tokens[data.currency1].decimals)
 
     try {
       setSubmitting(true)
       const res = await advertiseMutation.mutateAsync({
         ...data,
-        amount: scaledAmount,
         peerId
       })
       const receipt = await res.wait()
       if (receipt.status === 1) {
+        const adId = receipt.events?.[0].args?.[0].toNumber()
         toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
+
+        // save db
+        if (adId) {
+          console.log('saving advertisement...')
+          await AdvertisementEntity.save({
+            ...data,
+            adId,
+            exchanged: false
+          })
+          console.log('advertisement saved.')
+        }
         setSubmitting(false)
+        await listenSmp({ ...data, adId })
+        await HistoryEntity.save({
+          historyType: HistoryType.MakeAd,
+          timestamp: dayjs().unix(),
+          adId,
+          ...data
+        })
       } else {
         toast.error('Advertise transaction failed...', { icon: '😥' })
         setSubmitting(false)
@@ -65,8 +80,6 @@ const AdvertisementForm = () => {
       setSubmitting(false)
       return
     }
-
-    await listenSmp(data)
   })
 
   return (
@@ -159,7 +172,12 @@ const AdvertisementForm = () => {
                 {...register('amount', {
                   required: true,
                   validate: {
-                    positiveNumber: (v) => v > 0
+                    positiveNumber: (v) => v > 0,
+                    exceedBalance: (v) => {
+                      const balance =
+                        zkopruStore.tokenBalances[fields.currency1]
+                      return zkopruStore.l2BalanceLoaded && balance >= v
+                    }
                   }
                 })}
                 placeholder="0.0"
@@ -204,15 +222,11 @@ const AdvertisementForm = () => {
 }
 
 const Container = styled.div`
-  width: 100vw;
-  display: flex;
-  justify-content: center;
+  padding: ${SPACE.XL} ${SPACE.XXL};
 `
 
 const Body = styled.div`
   width: 100%;
-  max-width: 600px;
-  padding: ${SPACE.XL} ${SPACE.XXL};
 `
 
 const PageHead = styled.div`
