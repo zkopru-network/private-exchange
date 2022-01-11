@@ -30,8 +30,8 @@ const Container = styled.div`
   height: fit-content;
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.onSurface};
-  box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
   border-radius: ${RADIUS.M};
+  border: solid 1px ${({ theme }) => theme.border};
   padding: ${RADIUS.M};
 `
 

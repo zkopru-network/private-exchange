@@ -33,7 +33,7 @@ const Container = styled.div`
 
   background-color: ${({ theme }) => theme.surface};
   color: ${({ theme }) => theme.onSurface};
-  box-shadow: 0 1px 3px ${({ theme }) => theme.shadow};
+  border: solid 1px ${({ theme }) => theme.border};
 
   display: flex;
   align-items: center;
