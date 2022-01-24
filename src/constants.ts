@@ -35,9 +35,6 @@ const peerConfig = {
   path: '/'
 }
 
-const Tokens: { [key: string]: { address: string; decimals: number } } = {
-  ETH: { address: '0x0000000000000000000000000000000000000000', decimals: 18 },
-  TT: { address: '0x2471942920adf662c140f612dbd4ca343805499d', decimals: 4 }
-}
+const API_ROOT = 'http://localhost:8008'
 
-export { FONT_SIZE, SPACE, RADIUS, SupportedChainId, peerConfig, Tokens }
+export { FONT_SIZE, SPACE, RADIUS, SupportedChainId, peerConfig, API_ROOT }

@@ -5,8 +5,9 @@ import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
 import dayjs from 'dayjs'
-import { useAdvertiseMutation, FormData } from '../hooks/advertisement'
+import { usePostAdvertisement, FormData } from '../hooks/advertisement'
 import { useListenSmp } from '../hooks/smp'
+import { useTokens } from '../hooks/tokens'
 import useZkopruStore from '../store/zkopru'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
@@ -14,7 +15,6 @@ import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
-import tokens from '../tokenlist'
 import AdvertisementEntity from '../db/Advertisement'
 import HistoryEntity, { HistoryType } from '../db/History'
 
@@ -31,43 +31,46 @@ const AdvertisementForm = () => {
   })
 
   const theme = useTheme()
+  const tokensQuery = useTokens()
   const { active } = useWeb3React()
   const zkopruStore = useZkopruStore()
-  const advertiseMutation = useAdvertiseMutation()
+  const postAd = usePostAdvertisement()
   const listenSmp = useListenSmp()
   const fields = watch()
 
   const onSubmit = handleSubmit(async (data) => {
-    const peerId = useZkopruStore.getState().zkAddress as string
+    const zkAddress = useZkopruStore.getState().zkAddress as string
 
     try {
       setSubmitting(true)
-      const res = await advertiseMutation.mutateAsync({
+      const res = await postAd({
         ...data,
-        peerId
+        advertiser: zkAddress,
+        peerId: zkAddress
       })
-      const receipt = await res.wait()
-      if (receipt.status === 1) {
-        const adId = receipt.events?.[0].args?.[0].toNumber()
+      if (res.status === 201) {
+        const adId = Number(res.data.id)
         toast.success('Advertise transaction succeeded!!', { icon: '🥳' })
 
         // save db
         if (adId) {
           console.log('saving advertisement...')
-          await AdvertisementEntity.save({
+          const adRecord = {
             ...data,
-            adId,
+            id: adId,
+            advertiser: zkAddress,
             exchanged: false
-          })
+          }
+          await AdvertisementEntity.save(adRecord)
           console.log('advertisement saved.')
         }
         setSubmitting(false)
-        await listenSmp({ ...data, adId })
+        await listenSmp({ ...data, id: adId, advertiser: zkAddress })
         await HistoryEntity.save({
+          ...data,
           historyType: HistoryType.MakeAd,
           timestamp: dayjs().unix(),
-          adId,
-          ...data
+          adId
         })
       } else {
         toast.error('Advertise transaction failed...', { icon: '😥' })
@@ -81,6 +84,7 @@ const AdvertisementForm = () => {
       return
     }
   })
+  const tokens = tokensQuery.data || []
 
   return (
     <Container>
@@ -111,6 +115,10 @@ const AdvertisementForm = () => {
                         borderColor: !!errors.currency1
                           ? theme.error
                           : theme.border
+                      }),
+                      option: (provided) => ({
+                        ...provided,
+                        color: theme.onSecondary
                       })
                     }}
                     options={tokens.map((token) => ({
@@ -145,6 +153,10 @@ const AdvertisementForm = () => {
                         borderColor: !!errors.currency2
                           ? theme.error
                           : theme.border
+                      }),
+                      option: (provided) => ({
+                        ...provided,
+                        color: theme.onSecondary
                       })
                     }}
                     options={tokens.map((token) => ({
@@ -175,7 +187,9 @@ const AdvertisementForm = () => {
                     positiveNumber: (v) => v > 0,
                     exceedBalance: (v) => {
                       const balance =
-                        zkopruStore.tokenBalances[fields.currency1]
+                        fields.currency1 === 'ETH'
+                          ? (zkopruStore.balance as number)
+                          : zkopruStore.tokenBalances[fields.currency1]
                       return zkopruStore.l2BalanceLoaded && balance >= v
                     }
                   }

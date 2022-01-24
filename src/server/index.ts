@@ -11,6 +11,12 @@ createConnection().then((connection) => {
   const peerInfoRepository = connection.getRepository(PeerInfo)
 
   app.use(express.json())
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Headers', '*')
+    res.setHeader('Access-Control-Allow-Methods', '*')
+    next()
+  })
 
   app.get('/advertisements', async (req, res) => {
     const advertisements = await advertisementRepository.find()
@@ -23,9 +29,16 @@ createConnection().then((connection) => {
   })
 
   app.post('/advertisement', async (req, res) => {
-    const advertisement = advertisementRepository.create(req.body)
-    const result = await advertisementRepository.save(advertisement)
-    return res.send(result)
+    try {
+      const advertisement = advertisementRepository.create(req.body)
+      const result = await advertisementRepository.save(advertisement)
+      res.status(201)
+      res.send(result)
+    } catch (e) {
+      res.status(422)
+    } finally {
+      res.end()
+    }
   })
 
   app.get('/peerInfo/:id', async (req, res) => {
@@ -34,9 +47,17 @@ createConnection().then((connection) => {
   })
 
   app.post('/peerInfo', async (req, res) => {
-    const peer = peerInfoRepository.create(req.body)
-    const result = await peerInfoRepository.save(peer)
-    return res.send(result)
+    try {
+      const peer = peerInfoRepository.create(req.body)
+      const result = await peerInfoRepository.save(peer)
+      res.status(201)
+      res.send(result)
+    } catch (e) {
+      console.log(e)
+      res.status(422)
+    } finally {
+      res.end()
+    }
   })
 
   app.listen(PORT, () => {

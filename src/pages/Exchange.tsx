@@ -20,11 +20,12 @@ import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
 import useZkopruStore from '../store/zkopru'
 import { useRunSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
-import { FONT_SIZE, SPACE, Tokens } from '../constants'
+import { FONT_SIZE, SPACE } from '../constants'
 import { toScaled, pow10, toUnscaled } from '../utils/bn'
 import { shortAddressString } from '../utils/string'
 import HistoryEntity, { HistoryType } from '../db/History'
 import { getFormErrorMessage } from '../errorMessages'
+import { useTokensMap } from '../hooks/tokens'
 
 const Exchange = () => {
   // extract url params. always match path.
@@ -46,6 +47,7 @@ const Exchange = () => {
   const ad = useAdvertisementQuery(id)
   const smpMutation = useRunSmp()
   const swapMutation = useSwap()
+  const tokensMapQuery = useTokensMap()
 
   const runSMP = handleSubmit(async ({ sendAmount, receiveAmount }) => {
     const advertisement = ad?.data
@@ -53,18 +55,23 @@ const Exchange = () => {
       console.error('ad not loaded.')
       return
     }
+    const tokens = tokensMapQuery.data
+    if (!tokens) {
+      console.error('tokens map not loaded')
+      return
+    }
     setSubmitting(true)
 
     toast('Starting smp....')
-    const counterParty = advertisement.peerID
+    const counterParty = advertisement.peerId
     const [currency1, currency2] = advertisement.pair.split('/')
     const buyOrSell = advertisement.buyOrSell
     const sendTokenSymbol = buyOrSell ? currency1 : currency2
     const receiveTokenSymbol = buyOrSell ? currency2 : currency1
-    const sendToken = Tokens[sendTokenSymbol].address
-    const receiveToken = Tokens[receiveTokenSymbol].address
-    const sendDecimals = Tokens[sendTokenSymbol].decimals
-    const receiveDecimals = Tokens[receiveTokenSymbol].decimals
+    const sendToken = tokens[sendTokenSymbol].address
+    const receiveToken = tokens[receiveTokenSymbol].address
+    const sendDecimals = tokens[sendTokenSymbol].decimals
+    const receiveDecimals = tokens[receiveTokenSymbol].decimals
 
     const price = toScaled(sendAmount, sendDecimals)
       .mul(pow10(receiveDecimals))
@@ -88,6 +95,15 @@ const Exchange = () => {
         toast(
           `Creating swap transaction. send ${sendTokenSymbol}: ${send.toString()}, receive ${receiveTokenSymbol}: ${receive.toString()}`
         )
+        console.log(
+          'swap with, sendToken, receiveToken, sendAmount, receiveAmount',
+          counterParty,
+          sendToken,
+          receiveToken,
+          send.toString(),
+          receive.toString()
+        )
+
         await swapMutation.mutateAsync({
           counterParty,
           sendToken,
@@ -153,7 +169,7 @@ const Exchange = () => {
         <FormControl>
           <Label>PeerID</Label>
           <FormValue>
-            {shortAddressString(advertisement.peerID.toString())}
+            {shortAddressString(advertisement.peerId.toString())}
           </FormValue>
         </FormControl>
         <FormControl>
@@ -173,14 +189,7 @@ const Exchange = () => {
         <FormControl>
           <Label>
             Amount Receive({advertisement.buyOrSell ? currency2 : currency1})
-            <FootNote>
-              (Max:{' '}
-              {toUnscaled(
-                advertisement.amount,
-                Tokens[advertisement.buyOrSell ? currency2 : currency1].decimals
-              )}
-              )
-            </FootNote>
+            <FootNote>(Max: {advertisement.amount})</FootNote>
           </Label>
           <Input
             {...register('receiveAmount', {
@@ -206,11 +215,16 @@ const Exchange = () => {
               validate: {
                 positiveNumber: (v) => v > 0,
                 exceedBalance: (v) => {
+                  const currency = advertisement.buyOrSell
+                    ? currency1
+                    : currency2
                   const balance =
-                    zkopruStore.tokenBalances[
-                      advertisement.buyOrSell ? currency1 : currency2
-                    ]
-                  return zkopruStore.l2BalanceLoaded && balance >= v
+                    currency === 'ETH'
+                      ? zkopruStore.balance
+                      : zkopruStore.tokenBalances[
+                          advertisement.buyOrSell ? currency1 : currency2
+                        ]
+                  return !!balance && balance >= v
                 }
               }
             })}

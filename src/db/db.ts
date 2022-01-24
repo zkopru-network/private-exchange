@@ -1,12 +1,13 @@
 import Dexie from 'dexie'
 
 export interface IAdvertisementForm {
-  adId: number
+  id: number
   currency1: string
   currency2: string
   amount: number
   receiveAmount: number
   exchanged: boolean
+  advertiser: string
 }
 
 export enum HistoryType {
@@ -37,7 +38,7 @@ class DB extends Dexie {
 
     this.version(3).stores({
       advertisements:
-        'adId, currency1, currency2, amount, receiveAmount, exchanged',
+        'id, currency1, currency2, amount, receiveAmount, exchanged, advertiser',
       histories:
         '++id, historyType, adId, currency1, currency2, amount, receiveAmount, timestamp, pending, txHash'
     })

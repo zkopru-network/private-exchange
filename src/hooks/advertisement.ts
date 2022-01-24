@@ -1,23 +1,19 @@
-import { ContractTransaction, providers, BigNumber } from 'ethers'
-import { useWeb3React } from '@web3-react/core'
-import { useMutation, useQuery } from 'react-query'
-import { useAddresses } from './addresses'
-import { PeekABook__factory } from '../typechain'
+import { useCallback, useState, useEffect } from 'react'
+import { useQuery } from 'react-query'
+import axios from 'axios'
 import { pairNameAndBuyOrSell } from '../utils/advertisement'
-import { TypedEvent } from '../typechain/commons'
 import AdvertisementEntity from '../db/Advertisement'
-import { useCallback, useEffect } from 'react'
-import useZkopruStore from '../store/zkopru'
 import usePeerStore from '../store/peer'
 import { useListenSmp } from './smp'
-import { toScaled } from '../utils/bn'
-import { Tokens } from '../constants'
+import { useTokensMap } from './tokens'
+import { API_ROOT } from '../constants'
 
 export type FormData = {
-  currency1: string
-  currency2: string
-  amount: number
-  receiveAmount: number
+  currency1: string // currency advertiser pay
+  currency2: string // currency advertiser receive
+  advertiser: string // advertiser zkopru address
+  amount: number // scaled amount to pay
+  receiveAmount: number // scaled amount to receive (scale)
 }
 
 export type AdvertiseParams = FormData & {
@@ -25,151 +21,81 @@ export type AdvertiseParams = FormData & {
 }
 
 export type Advertisement = {
-  adID: BigNumber
-  pairIndex: string
+  id: number
   pair: string
   buyOrSell: boolean
-  amount: BigNumber
-  peerID: string
+  amount: number
+  peerId: string
   advertiser: string
 }
 
-export function useAdvertiseMutation() {
-  const addresses = useAddresses()
-  const { library } = useWeb3React<providers.Web3Provider>()
-
-  return useMutation<ContractTransaction, Error, AdvertiseParams>(
-    async ({ currency1, currency2, amount, receiveAmount, peerId }) => {
-      if (!library) throw new Error('getting provider failed. connect wallet')
-      const signer = library.getSigner()
-      const contract = PeekABook__factory.connect(addresses.PeekABook, signer)
+export function usePostAdvertisement() {
+  return useCallback(
+    async ({ currency1, currency2, advertiser, amount, peerId, id }) => {
       const { pairName, buyOrSell } = pairNameAndBuyOrSell(currency1, currency2)
-      const scaledAmount = toScaled(amount, Tokens[currency1].decimals)
-
-      const tx = await contract.advertise(
-        pairName,
+      return await axios.post(`${API_ROOT}/advertisement`, {
+        id,
+        advertiser,
+        pair: pairName,
         buyOrSell,
-        scaledAmount,
+        amount,
         peerId
-      )
-      return tx
-    }
+      })
+    },
+    []
   )
-}
-
-function parseAdvertisement(
-  event: TypedEvent<
-    [BigNumber, string, string, boolean, BigNumber, string, string] & {
-      adID: BigNumber
-      pairIndex: string
-      pair: string
-      buyOrSell: boolean
-      amount: BigNumber
-      peerID: string
-      advertiser: string
-    }
-  >
-): Advertisement {
-  return {
-    adID: event.args.adID,
-    pairIndex: event.args.pairIndex,
-    pair: event.args.pair,
-    buyOrSell: event.args.buyOrSell,
-    amount: event.args.amount,
-    peerID: event.args.peerID,
-    advertiser: event.args.advertiser
-  }
 }
 
 export function useAdvertisementsQuery() {
-  const addresses = useAddresses()
-  const { library } = useWeb3React<providers.Web3Provider>()
-
-  return useQuery(
-    ['advertisements'],
-    async () => {
-      if (!library) throw new Error('getting provider failed. connect wallet')
-      const contract = PeekABook__factory.connect(addresses.PeekABook, library)
-
-      return (await contract.queryFilter(contract.filters.Advertise())).map(
-        parseAdvertisement
-      )
-    },
-    {
-      enabled: !!library
-    }
-  )
+  return useQuery<Advertisement[]>(['advertisements'], async () => {
+    const res = await axios.get<Advertisement[]>(`${API_ROOT}/advertisements`)
+    return res.data
+  })
 }
 
 export function useAdvertisementQuery(id: string) {
-  const advertisements = useAdvertisementsQuery()
-
-  return advertisements.data
-    ? {
-        isError: advertisements.isError,
-        isLoading: advertisements.isLoading,
-        data: advertisements.data.find((ad) => ad.adID.toString() === id)
-      }
-    : {
-        isError: advertisements.isError,
-        isLoading: advertisements.isLoading,
-        data: null
-      }
+  return useQuery<Advertisement | null>(['advertisement', id], async () => {
+    try {
+      const res = await axios.get<Advertisement>(
+        `${API_ROOT}/advertisement/${id}`
+      )
+      return res.data
+    } catch (e) {
+      return null
+    }
+  })
 }
 
 export function useStartLoadExistingAd() {
-  const wallet = useZkopruStore().wallet
+  const tokensMap = useTokensMap()
+  const [loaded, setLoaded] = useState(false)
   const peer = usePeerStore().peer
   const listen = useListenSmp()
 
   useEffect(() => {
-    if (wallet && !peer) {
-      ;(async () => {
-        console.log('load existing ad')
-        // wait until client is ready
-        const ad = await AdvertisementEntity.findLatest()
+    const loadAds = async () => {
+      console.log('load existing ad')
+      // wait until client is ready
+      const ad = await AdvertisementEntity.findLatest()
 
-        if (ad && !ad.exchanged) {
+      if (ad && !ad.exchanged) {
+        if (
+          tokensMap.data &&
+          tokensMap.data[ad?.currency1] &&
+          tokensMap.data[ad?.currency2]
+        ) {
           console.log('ads existing. start listening smp')
           listen(ad)
-        } else {
-          console.log('ads do not exist.')
+          setLoaded(true)
         }
-      })()
+      } else {
+        console.log('ads do not exist.')
+        setLoaded(true)
+      }
     }
-  }, [wallet, peer])
-}
 
-export function useUpdateAdvertisementMutation() {
-  const addresses = useAddresses()
-  const { library } = useWeb3React<providers.Web3Provider>()
-  const advertise = useAdvertiseMutation()
-
-  return useCallback(
-    async ({
-      currency1,
-      currency2,
-      adId,
-      amount,
-      peerId,
-      receiveAmount
-    }: AdvertiseParams & { adId: number }) => {
-      if (!addresses || !library)
-        throw new Error('Cannot call update advertisement')
-      const signer = library.getSigner()
-      const contract = PeekABook__factory.connect(addresses.PeekABook, signer)
-
-      const invalidateTx = await contract.invalidate(adId)
-      await invalidateTx.wait()
-
-      await advertise.mutateAsync({
-        currency1,
-        currency2,
-        amount,
-        receiveAmount,
-        peerId
-      })
-    },
-    [addresses, library, advertise]
-  )
+    if (!peer && !loaded && tokensMap.data) {
+      loadAds()
+    }
+  }, [tokensMap])
 }
