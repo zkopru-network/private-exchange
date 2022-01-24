@@ -115,7 +115,7 @@ const HeadCell = styled(Cell)`
 `
 
 const SearchSection = styled.div`
-  margin-bottom: ${SPACE.M};
+  margin-bottom: 12px;
   position: relative;
 `
 
