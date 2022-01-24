@@ -49,7 +49,7 @@ export function usePostAdvertisement() {
 export function useAdvertisementsQuery() {
   return useQuery<Advertisement[]>(['advertisements'], async () => {
     const res = await axios.get<Advertisement[]>(`${API_ROOT}/advertisements`)
-    return res.data
+    return res.data.filter((ad) => ad.amount > 0)
   })
 }
 
