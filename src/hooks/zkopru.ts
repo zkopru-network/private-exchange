@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useMutation } from 'react-query'
 import { useWeb3React } from '@web3-react/core'
 import { sha512_256 } from 'js-sha512'
-import { fromWei } from '../utils/wei'
+import { formatEther, hexZeroPad } from 'ethers/lib/utils'
 
 // @ts-ignore: no declaration file
 import Zkopru, { ZkAccount, UtxoStatus } from '@zkopru/client/browser'
@@ -202,23 +202,29 @@ export function useLoadL2Balance() {
           ...acc
         }
       }, {}),
-      balance: fromWei(eth.toString())
+      balance: Number(formatEther(eth.toString()))
     })
 
-    for (const _address of Object.keys(erc20)) {
-      const token = state.tokensByAddress[_address.toLowerCase()]
-      if (!token) continue
-      useStore.setState({
-        tokenBalances: {
-          ...state.tokenBalances,
-          [token.symbol]: +erc20[_address].toString() / 10 ** +token.decimals
-        }
-      })
+    let tokenBalances = {
+      ...state.tokenBalances
     }
+    for (const _address of Object.keys(erc20)) {
+      const token =
+        state.tokensByAddress[hexZeroPad(_address.toLowerCase(), 20)]
+      if (!token) continue
+      tokenBalances = {
+        ...tokenBalances,
+        [token.symbol]: +erc20[_address].toString() / 10 ** +token.decimals
+      }
+    }
+    useStore.setState({
+      tokenBalances
+    })
+
     {
       const { eth } = locked
       useStore.setState({
-        lockedBalance: fromWei(eth.toString()),
+        lockedBalance: Number(formatEther(eth.toString())),
         l2BalanceLoaded: true
       })
     }

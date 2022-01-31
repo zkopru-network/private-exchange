@@ -45,7 +45,7 @@ const History = () => {
       <PageHead>
         <Title>History</Title>
       </PageHead>
-      <PageBody>
+      <Body>
         <HeadRow>
           <HeadCell>Type</HeadCell>
           <HeadCell>At</HeadCell>
@@ -54,10 +54,14 @@ const History = () => {
           <HeadCell>Status</HeadCell>
         </HeadRow>
         <div>{historyList.map(renderHistory)}</div>
-      </PageBody>
+      </Body>
     </PageContainer>
   )
 }
+
+const Body = styled(PageBody)`
+  margin-top: 40px;
+`
 
 const Row = styled.div`
   padding: ${SPACE.S} ${SPACE.M};

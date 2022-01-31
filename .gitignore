@@ -27,3 +27,4 @@ src/address.json
 # geth docker volume
 .ethereum/*
 *.db
+*.sqlite
