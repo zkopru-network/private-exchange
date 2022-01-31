@@ -2,8 +2,7 @@ import { useEffect } from 'react'
 import { useMutation } from 'react-query'
 import { useWeb3React } from '@web3-react/core'
 import { sha512_256 } from 'js-sha512'
-import { fromWei } from '../utils/wei'
-import { padAddress } from '../utils/string'
+import { formatEther, hexZeroPad } from 'ethers/lib/utils'
 
 // @ts-ignore: no declaration file
 import Zkopru, { ZkAccount, UtxoStatus } from '@zkopru/client/browser'
@@ -203,14 +202,15 @@ export function useLoadL2Balance() {
           ...acc
         }
       }, {}),
-      balance: fromWei(eth.toString())
+      balance: Number(formatEther(eth.toString()))
     })
 
     let tokenBalances = {
       ...state.tokenBalances
     }
     for (const _address of Object.keys(erc20)) {
-      const token = state.tokensByAddress[padAddress(_address.toLowerCase())]
+      const token =
+        state.tokensByAddress[hexZeroPad(_address.toLowerCase(), 20)]
       if (!token) continue
       tokenBalances = {
         ...tokenBalances,
@@ -224,7 +224,7 @@ export function useLoadL2Balance() {
     {
       const { eth } = locked
       useStore.setState({
-        lockedBalance: fromWei(eth.toString()),
+        lockedBalance: Number(formatEther(eth.toString())),
         l2BalanceLoaded: true
       })
     }

@@ -13,7 +13,8 @@ import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
-import { FONT_SIZE, RADIUS, SPACE } from '../constants'
+import { PageContainer, PageBody, PageHead } from '../components/Page'
+import { FONT_SIZE, RADIUS } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import AdvertisementEntity from '../db/Advertisement'
 import HistoryEntity, { HistoryType } from '../db/History'
@@ -87,7 +88,7 @@ const AdvertisementForm = () => {
   const tokens = tokensQuery.data || []
 
   return (
-    <Container>
+    <PageContainer>
       <Body>
         <PageHead>
           <Title>Create Advertisement</Title>
@@ -231,34 +232,20 @@ const AdvertisementForm = () => {
           </form>
         </FormContainer>
       </Body>
-    </Container>
+    </PageContainer>
   )
 }
 
-const Container = styled.div`
-  padding: ${SPACE.XL} ${SPACE.XXL};
-`
-
 const Body = styled.div`
   width: 100%;
-`
-
-const PageHead = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `
 
 const HeadLink = styled.a`
   cursor: pointer;
   font-weight: 600;
 `
-export const FormContainer = styled.div`
-  background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
-  box-shadow: 0 1px 4px ${({ theme }) => theme.shadow};
-  border-radius: ${RADIUS.M};
-  padding: ${SPACE.M};
+export const FormContainer = styled(PageBody)`
+  margin-top: 40px;
 `
 
 const SubmitButton = styled(PrimaryButton)`

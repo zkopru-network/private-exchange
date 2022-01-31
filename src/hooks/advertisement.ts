@@ -49,7 +49,7 @@ export function usePostAdvertisement() {
 export function useAdvertisementsQuery() {
   return useQuery<Advertisement[]>(['advertisements'], async () => {
     const res = await axios.get<Advertisement[]>(`${API_ROOT}/advertisements`)
-    return res.data
+    return res.data.filter((ad) => ad.amount > 0)
   })
 }
 
@@ -74,7 +74,6 @@ export function useStartLoadExistingAd() {
 
   useEffect(() => {
     const loadAds = async () => {
-      console.log('load existing ad')
       // wait until client is ready
       const ad = await AdvertisementEntity.findLatest()
 
@@ -84,7 +83,7 @@ export function useStartLoadExistingAd() {
           tokensMap.data[ad?.currency1] &&
           tokensMap.data[ad?.currency2]
         ) {
-          console.log('ads existing. start listening smp')
+          console.log('ads exists. start listening smp')
           listen(ad)
           setLoaded(true)
         }
