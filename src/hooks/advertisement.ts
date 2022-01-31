@@ -74,7 +74,6 @@ export function useStartLoadExistingAd() {
 
   useEffect(() => {
     const loadAds = async () => {
-      console.log('load existing ad')
       // wait until client is ready
       const ad = await AdvertisementEntity.findLatest()
 
@@ -84,7 +83,7 @@ export function useStartLoadExistingAd() {
           tokensMap.data[ad?.currency1] &&
           tokensMap.data[ad?.currency2]
         ) {
-          console.log('ads existing. start listening smp')
+          console.log('ads exists. start listening smp')
           listen(ad)
           setLoaded(true)
         }
