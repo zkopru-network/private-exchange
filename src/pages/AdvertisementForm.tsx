@@ -4,6 +4,7 @@ import { useWeb3React } from '@web3-react/core'
 import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
+import Modal from 'react-modal'
 import dayjs from 'dayjs'
 import { usePostAdvertisement, FormData } from '../hooks/advertisement'
 import { useListenSmp } from '../hooks/smp'
@@ -14,12 +15,13 @@ import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
 import { PageContainer, PageBody, PageHead } from '../components/Page'
-import { FONT_SIZE, RADIUS } from '../constants'
+import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import AdvertisementEntity from '../db/Advertisement'
 import HistoryEntity, { HistoryType } from '../db/History'
 
 const AdvertisementForm = () => {
+  const [modalOpen, setModalOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const {
     register,
@@ -66,6 +68,7 @@ const AdvertisementForm = () => {
           console.log('advertisement saved.')
         }
         setSubmitting(false)
+        setModalOpen(false)
         await listenSmp({ ...data, id: adId, advertiser: zkAddress })
         await HistoryEntity.save({
           ...data,
@@ -76,16 +79,37 @@ const AdvertisementForm = () => {
       } else {
         toast.error('Advertise transaction failed...', { icon: '😥' })
         setSubmitting(false)
+        setModalOpen(false)
         return
       }
     } catch (e) {
       console.log(e)
       toast.error('Advertise transaction failed...', { icon: '😥' })
       setSubmitting(false)
+      setModalOpen(false)
       return
     }
   })
   const tokens = tokensQuery.data || []
+  const customStyles = {
+    overlay: {
+      backgroundColor: 'rgba(255, 255, 255, 0.25)'
+    },
+    content: {
+      border: `2px solid ${theme.border}`,
+      borderRadius: '8px',
+      backgroundColor: theme.surface,
+      color: theme.onSurface,
+      minWidth: '400px',
+      minHeight: '300px',
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)'
+    }
+  }
 
   return (
     <PageContainer>
@@ -101,7 +125,7 @@ const AdvertisementForm = () => {
           </HeadLink>
         </PageHead>
         <FormContainer>
-          <form onSubmit={onSubmit}>
+          <form>
             <FormControl>
               <Label>From token</Label>
               <Controller
@@ -227,11 +251,58 @@ const AdvertisementForm = () => {
             ) : submitting ? (
               <SubmitButton disabled>Submitting...</SubmitButton>
             ) : (
-              <SubmitButton>Create Advertisement</SubmitButton>
+              <SubmitButton
+                onClick={(e) => {
+                  e.preventDefault()
+                  setModalOpen(true)
+                }}
+              >
+                Create Advertisement
+              </SubmitButton>
             )}
           </form>
         </FormContainer>
       </Body>
+      <Modal isOpen={modalOpen} style={customStyles}>
+        <ConfirmContainer>
+          <ConfirmTitle>Confirm Advertisement</ConfirmTitle>
+          <ConfirmBody>
+            <ConfirmItem>
+              <ConfirmLabel>From</ConfirmLabel>
+              <ConfirmValue>{fields.currency1}</ConfirmValue>
+            </ConfirmItem>
+            <ConfirmItem>
+              <ConfirmLabel>To</ConfirmLabel>
+              <ConfirmValue>{fields.currency2}</ConfirmValue>
+            </ConfirmItem>
+            <ConfirmItem>
+              <ConfirmLabel>From amount</ConfirmLabel>
+              <ConfirmValue>{fields.amount}</ConfirmValue>
+            </ConfirmItem>
+            <ConfirmItem>
+              <ConfirmLabel>To amount</ConfirmLabel>
+              <ConfirmValue>{fields.receiveAmount}</ConfirmValue>
+            </ConfirmItem>
+          </ConfirmBody>
+          <ConfirmButtonSection>
+            <ConfirmButton
+              onClick={() => {
+                setModalOpen(false)
+              }}
+            >
+              Cancel
+            </ConfirmButton>
+            <ConfirmButton
+              onClick={() => {
+                onSubmit()
+              }}
+              disabled={submitting}
+            >
+              {submitting ? 'Submitting...' : 'Confirm'}
+            </ConfirmButton>
+          </ConfirmButtonSection>
+        </ConfirmContainer>
+      </Modal>
     </PageContainer>
   )
 }
@@ -244,6 +315,7 @@ const HeadLink = styled.a`
   cursor: pointer;
   font-weight: 600;
 `
+
 export const FormContainer = styled(PageBody)`
   margin-top: 40px;
 `
@@ -253,6 +325,41 @@ const SubmitButton = styled(PrimaryButton)`
   font-weight: 600;
   width: 100%;
   padding: 12px;
+`
+
+const ConfirmContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  min-height: 300px;
+`
+
+const ConfirmBody = styled.div``
+
+const ConfirmTitle = styled.h2`
+  margin: ${SPACE.M};
+`
+
+const ConfirmItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: ${SPACE.M};
+`
+
+const ConfirmLabel = styled.span`
+  font-weight: 600;
+`
+
+const ConfirmValue = styled.span``
+
+const ConfirmButton = styled(PrimaryButton)`
+  width: 160px;
+`
+
+const ConfirmButtonSection = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 `
 
 export default AdvertisementForm
