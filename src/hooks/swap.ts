@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers'
 import { useMutation } from 'react-query'
-import { randomHex } from 'web3-utils'
 import useStore from '../store/zkopru'
 
 type SwapParams = {
@@ -9,6 +8,7 @@ type SwapParams = {
   sendAmount: BigNumber
   receiveAmount: BigNumber
   counterParty: string
+  salt: number
 }
 
 export function useSwap() {
@@ -18,7 +18,8 @@ export function useSwap() {
       sendAmount,
       receiveToken,
       receiveAmount,
-      counterParty
+      counterParty,
+      salt
     }) => {
       console.log('Sending swap transaction...')
       const { zkAddress, wallet } = useStore.getState()
@@ -27,10 +28,8 @@ export function useSwap() {
       const { account } = wallet.wallet
       if (!account) throw new Error('zkAccount not set')
 
-      const fee = await wallet.loadCurrentPrice()
-
-      // check how it works.
-      const salt = randomHex(16)
+      // const fee = await wallet.loadCurrentPrice()
+      const fee = '2060000000000'
 
       try {
         const tx = await wallet.generateSwapTransaction(
@@ -42,8 +41,9 @@ export function useSwap() {
           fee,
           salt
         )
-
-        await wallet.wallet.sendTx({ tx, from: account })
+        const zkTx = await wallet.wallet.shieldTx({ tx })
+        const response = await wallet.wallet.sendLayer2Tx(zkTx)
+        // save txHash
       } catch (e) {
         console.error(e)
       }

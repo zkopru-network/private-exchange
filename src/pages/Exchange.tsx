@@ -85,7 +85,7 @@ const Exchange = () => {
     toast(
       `Finish running smp. Result: ${
         smpResult.result ? 'Success' : 'Failed'
-      }: Amount: ${smpResult.negotiatedAmount}`
+      }: Amount: ${smpResult.negotiatedAmount}, Salt: ${smpResult.salt}`
     )
 
     if (smpResult.result) {
@@ -109,7 +109,8 @@ const Exchange = () => {
           sendToken,
           receiveToken,
           receiveAmount: receive,
-          sendAmount: send
+          sendAmount: send,
+          salt: smpResult.salt
         })
         toast.success('Successfully created swap transaction.')
         await HistoryEntity.save({
