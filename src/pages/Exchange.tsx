@@ -89,7 +89,7 @@ const Exchange = () => {
       try {
         const receive = toScaled(smpResult.negotiatedAmount, receiveDecimals)
         const send = price.mul(receive).div(pow10(receiveDecimals))
-        await swapMutation.mutateAsync({
+        const hash = await swapMutation.mutateAsync({
           counterParty,
           sendToken,
           receiveToken,
@@ -106,7 +106,8 @@ const Exchange = () => {
           currency2: receiveTokenSymbol,
           amount: toUnscaled(send, sendDecimals),
           receiveAmount: toUnscaled(receive, receiveDecimals),
-          pending: true
+          pending: true,
+          txHash: hash
         })
       } catch (e) {
         setSwapStatus(SwapStatus.TX_FAIL)

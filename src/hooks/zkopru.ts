@@ -7,6 +7,7 @@ import { formatEther, hexZeroPad } from 'ethers/lib/utils'
 // @ts-ignore: no declaration file
 import Zkopru, { ZkAccount, UtxoStatus } from '@zkopru/client/browser'
 import useStore, { Status } from '../store/zkopru'
+import HistoryEntity from '../db/History'
 
 export enum NetworkStatus {
   STOPPED = 'stopped',
@@ -157,8 +158,6 @@ export function useUpdateStatus() {
 
     const state = useStore.getState()
 
-    // TODO: update history if any pending tx
-
     if (state.latestBlock > 0) {
       const newPercent =
         (100 * +state.latestBlock) / (+state.proposalCount - state.uncleCount)
@@ -166,6 +165,24 @@ export function useUpdateStatus() {
     } else {
       state.syncPercent = 100
     }
+    const zkDb = state.wallet?.node._db
+    if (!zkDb) return
+
+    const pendingHistories = await HistoryEntity.findPendingMatchMades()
+    await Promise.all(
+      pendingHistories.map(async (history) => {
+        if (!history.txHash) return
+        const zkTx = await zkDb.findOne('Tx', {
+          where: {
+            hash: history.txHash
+          }
+        })
+        if (zkTx) {
+          // update pending state
+          await HistoryEntity.save({ ...history, pending: false })
+        }
+      })
+    )
   })
 }
 

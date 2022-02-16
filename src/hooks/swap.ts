@@ -12,7 +12,7 @@ type SwapParams = {
 }
 
 export function useSwap() {
-  return useMutation<unknown, unknown, SwapParams>(
+  return useMutation<string | undefined, unknown, SwapParams>(
     async ({
       sendToken,
       sendAmount,
@@ -42,8 +42,8 @@ export function useSwap() {
           salt
         )
         const zkTx = await wallet.wallet.shieldTx({ tx })
-        const response = await wallet.wallet.sendLayer2Tx(zkTx)
-        // save txHash
+        await wallet.wallet.sendLayer2Tx(zkTx)
+        return zkTx.hash().toString()
       } catch (e) {
         console.error(e)
       }
