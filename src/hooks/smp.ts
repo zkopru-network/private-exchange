@@ -24,6 +24,7 @@ type SMPParams = {
 type SmpResult = {
   result: boolean
   negotiatedAmount: number
+  salt: number
 }
 
 export function useRunSmp() {
@@ -86,12 +87,13 @@ export function useListenSmp() {
         async (
           remotePeerId: string,
           result: boolean,
-          negotiatedAmount: number
+          negotiatedAmount: number,
+          salt: number
         ) => {
           toast(
             `Incoming SMP finished. result: ${
               result ? 'Success' : 'Failed'
-            }, negotiatedAmount: ${negotiatedAmount}`
+            }, negotiatedAmount: ${negotiatedAmount}, salt: ${salt}`
           )
 
           // TODO: get remote peer zkAddress. when implement blind find
@@ -105,13 +107,15 @@ export function useListenSmp() {
                 data.currency2
               }: ${receive.toString()}`
             )
+            // confirm
             try {
               await swapMutation.mutateAsync({
                 counterParty: remotePeerId,
                 sendToken: tokens[data.currency1].address,
                 receiveToken: tokens[data.currency2].address,
                 receiveAmount: receive,
-                sendAmount: send
+                sendAmount: send,
+                salt
               })
               toast.success('Successfully create swap transaction.')
               peer.disconnect()

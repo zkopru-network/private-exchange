@@ -2438,6 +2438,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-modal@^3.13.1":
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/@types/react-modal/-/react-modal-3.13.1.tgz#5b9845c205fccc85d9a77966b6e16dc70a60825a"
+  integrity sha512-iY/gPvTDIy6Z+37l+ibmrY+GTV4KQTHcCyR5FIytm182RQS69G5ps4PH2FxtC7bAQ2QRHXMevsBgck7IQruHNg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-select@^4.0.17":
   version "4.0.17"
   resolved "https://registry.npmjs.org/@types/react-select/-/react-select-4.0.17.tgz"
@@ -6756,6 +6763,11 @@ execa@^5.0.0:
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
 
+exenv@^1.2.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
+  integrity sha1-KueOhdmJQVhnCwPUe+wfA72Ru50=
+
 exit-on-epipe@~1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/exit-on-epipe/-/exit-on-epipe-1.0.1.tgz"
@@ -9203,18 +9215,10 @@ js-sha512@^0.8.0:
   resolved "https://registry.npmjs.org/js-sha512/-/js-sha512-0.8.0.tgz"
   integrity sha512-PWsmefG6Jkodqt+ePTvBZCSMFgN7Clckjd0O7su3I0+BW2QWUTJNzjktHsztGLhncP2h8mcF9V9Y2Ha59pAViQ==
 
-js-smp-peer2@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/js-smp-peer2/-/js-smp-peer2-0.1.0.tgz"
-  integrity sha512-1NRXNpFp6Yjyaqe6CHWytVJmwL2wpcrhGal1KgOnexrp3pmkjqFyvwCQ8loh4dV00q54K+8IT0hzJkZk8LnmeA==
-  dependencies:
-    js-smp "^0.1.8"
-    peerjs "^1.2.0"
-
-js-smp-peer@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.npmjs.org/js-smp-peer/-/js-smp-peer-0.0.9.tgz"
-  integrity sha512-vW512kQj/9C0S5dlLacDUocmBHjX1KT4uULEznHzFjRA/5Gk860IIECO45+8G+UomjirPRC/AQ8Ag0VQEbK4VA==
+js-smp-peer2@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/js-smp-peer2/-/js-smp-peer2-0.1.1.tgz#d3deaa93fd17f62ac5619f955986b7c856a6af9b"
+  integrity sha512-VWHOq5Mjd/H4nizuBgusFQtQaqjqPLRy883t1M+RvsQooFp5I3JZPYsdrb98yUp8Au1Zm8AAcH5dKBVgcyN88w==
   dependencies:
     js-smp "^0.1.8"
     peerjs "^1.2.0"
@@ -9635,7 +9639,7 @@ long-timeout@0.1.1:
   resolved "https://registry.npmjs.org/long-timeout/-/long-timeout-0.1.1.tgz"
   integrity sha1-lyHXiLR+C8taJMLivuGg2lXatRQ=
 
-loose-envify@^1.1.0, loose-envify@^1.4.0:
+loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz"
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
@@ -12311,6 +12315,21 @@ react-is@^17.0.1:
   resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.1.tgz"
   integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
 
+react-lifecycles-compat@^3.0.0:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
+  integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-modal@^3.14.4:
+  version "3.14.4"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.14.4.tgz#2ca7e8e9a180955e5c9508c228b73167c1e6f6a3"
+  integrity sha512-8surmulejafYCH9wfUmFyj4UfbSJwjcgbS9gf3oOItu4Hwd6ivJyVBETI0yHRhpJKCLZMUtnhzk76wXTsNL6Qg==
+  dependencies:
+    exenv "^1.2.0"
+    prop-types "^15.7.2"
+    react-lifecycles-compat "^3.0.0"
+    warning "^4.0.3"
+
 react-query@^3.21.1:
   version "3.21.1"
   resolved "https://registry.npmjs.org/react-query/-/react-query-3.21.1.tgz"
@@ -14908,6 +14927,13 @@ walker@^1.0.7, walker@~1.0.5:
   integrity sha1-L3+bj9ENZ3JisYqITijRlhjgKPs=
   dependencies:
     makeerror "1.0.x"
+
+warning@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/warning/-/warning-4.0.3.tgz#16e9e077eb8a86d6af7d64aa1e05fd85b4678ca3"
+  integrity sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==
+  dependencies:
+    loose-envify "^1.0.0"
 
 wasmbuilder@0.0.10:
   version "0.0.10"

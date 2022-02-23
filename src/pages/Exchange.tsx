@@ -16,6 +16,7 @@ import {
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import { PageContainer, PageBody, PageHead } from '../components/Page'
+import SwapModal, { SwapStatus } from '../components/SwapModal'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
 import useZkopruStore from '../store/zkopru'
 import { useRunSmp } from '../hooks/smp'
@@ -30,6 +31,7 @@ import { useTokensMap } from '../hooks/tokens'
 const Exchange = () => {
   // extract url params. always match path.
   const params = useRoute('/exchange/:id')[1]
+  const [swapStatus, setSwapStatus] = useState(SwapStatus.INITIAL)
   const {
     register,
     handleSubmit,
@@ -52,17 +54,16 @@ const Exchange = () => {
   const runSMP = handleSubmit(async ({ sendAmount, receiveAmount }) => {
     const advertisement = ad?.data
     if (!advertisement) {
-      console.error('ad not loaded.')
+      toast.error('Advertisement not loaded yet. Please retry later.')
       return
     }
     const tokens = tokensMapQuery.data
     if (!tokens) {
-      console.error('tokens map not loaded')
+      toast.error('Tokens not loaded yet. Please retry later.')
       return
     }
     setSubmitting(true)
-
-    toast('Starting smp....')
+    setSwapStatus(SwapStatus.SMP_RUNNING)
     const counterParty = advertisement.peerId
     const [currency1, currency2] = advertisement.pair.split('/')
     const buyOrSell = advertisement.buyOrSell
@@ -82,36 +83,21 @@ const Exchange = () => {
       counterpartyId: counterParty,
       amount: receiveAmount
     })
-    toast(
-      `Finish running smp. Result: ${
-        smpResult.result ? 'Success' : 'Failed'
-      }: Amount: ${smpResult.negotiatedAmount}`
-    )
 
     if (smpResult.result) {
+      setSwapStatus(SwapStatus.SMP_SUCCESS)
       try {
         const receive = toScaled(smpResult.negotiatedAmount, receiveDecimals)
         const send = price.mul(receive).div(pow10(receiveDecimals))
-        toast(
-          `Creating swap transaction. send ${sendTokenSymbol}: ${send.toString()}, receive ${receiveTokenSymbol}: ${receive.toString()}`
-        )
-        console.log(
-          'swap with, sendToken, receiveToken, sendAmount, receiveAmount',
-          counterParty,
-          sendToken,
-          receiveToken,
-          send.toString(),
-          receive.toString()
-        )
-
         await swapMutation.mutateAsync({
           counterParty,
           sendToken,
           receiveToken,
           receiveAmount: receive,
-          sendAmount: send
+          sendAmount: send,
+          salt: smpResult.salt
         })
-        toast.success('Successfully created swap transaction.')
+        setSwapStatus(SwapStatus.TX_SUBMITTED)
         await HistoryEntity.save({
           historyType: HistoryType.MatchMade,
           timestamp: dayjs().unix(),
@@ -123,9 +109,10 @@ const Exchange = () => {
           pending: true
         })
       } catch (e) {
-        toast.error('Failed to create swap transaction.')
+        setSwapStatus(SwapStatus.TX_FAIL)
       }
     } else {
+      setSwapStatus(SwapStatus.SMP_FAIL)
       await HistoryEntity.save({
         historyType: HistoryType.MatchFailed,
         timestamp: dayjs().unix(),
@@ -246,6 +233,12 @@ const Exchange = () => {
           <SubmitButton onClick={runSMP}>Swap</SubmitButton>
         )}
       </PageBody>
+      <SwapModal
+        swapStatus={swapStatus}
+        onClose={() => {
+          setSwapStatus(SwapStatus.INITIAL)
+        }}
+      />
     </PageContainer>
   )
 }
