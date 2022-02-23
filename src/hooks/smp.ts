@@ -109,7 +109,7 @@ export function useListenSmp() {
             )
             // confirm
             try {
-              await swapMutation.mutateAsync({
+              const hash = await swapMutation.mutateAsync({
                 counterParty: remotePeerId,
                 sendToken: tokens[data.currency1].address,
                 receiveToken: tokens[data.currency2].address,
@@ -131,7 +131,8 @@ export function useListenSmp() {
                 adId: data.id,
                 amount: toUnscaled(send, sendDecimals),
                 receiveAmount: toUnscaled(receive, receiveDecimals),
-                pending: true
+                pending: true,
+                txHash: hash
               })
 
               // rest amount: data.amount - send
