@@ -41,6 +41,17 @@ createConnection().then((connection) => {
     }
   })
 
+  app.delete('/advertisement/:id', async (req, res) => {
+    try {
+      await advertisementRepository.delete(req.params.id)
+      res.status(204)
+    } catch (e) {
+      res.status(400)
+    } finally {
+      res.end()
+    }
+  })
+
   app.get('/peerInfo/:id', async (req, res) => {
     const peer = await peerInfoRepository.findOne(req.params.id)
     res.json(peer)

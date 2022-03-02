@@ -47,6 +47,13 @@ export function usePostAdvertisement() {
   )
 }
 
+export function useDeleteAdvertisement() {
+  // TODO: authentication
+  return useCallback(async (id) => {
+    return await axios.delete(`${API_ROOT}/advertisement/${id}`)
+  }, [])
+}
+
 export function useAdvertisementsQuery() {
   return useQuery<Advertisement[]>(['advertisements'], async () => {
     const res = await axios.get<Advertisement[]>(`${API_ROOT}/advertisements`)

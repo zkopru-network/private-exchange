@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useCallback } from 'react'
 import { useQuery } from 'react-query'
+import useStore, { PEER_STATUS } from '../store/peer'
 import { API_ROOT } from '../constants'
 
 type PeerInfo = {
@@ -22,4 +23,15 @@ export function usePostPeerInfo() {
       isOnline
     })
   }, [])
+}
+
+export function useStopPeer() {
+  const peerStore = useStore()
+  return useCallback(() => {
+    const { peer } = peerStore
+    if (peer) {
+      peerStore.setPeer(null)
+      peerStore.setPeerStatus(PEER_STATUS.OFF)
+    }
+  }, [peerStore])
 }
