@@ -6,6 +6,7 @@ export interface IAdvertisementForm {
   currency2: string
   amount: number
   receiveAmount: number
+  fee: number
   exchanged: boolean
   advertiser: string
 }
@@ -38,7 +39,7 @@ class DB extends Dexie {
 
     this.version(3).stores({
       advertisements:
-        'id, currency1, currency2, amount, receiveAmount, exchanged, advertiser',
+        'id, currency1, currency2, amount, receiveAmount, exchanged, advertiser, fee',
       histories:
         '++id, historyType, adId, currency1, currency2, amount, receiveAmount, timestamp, pending, txHash'
     })

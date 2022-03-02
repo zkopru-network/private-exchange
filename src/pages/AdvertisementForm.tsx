@@ -30,7 +30,10 @@ const AdvertisementForm = () => {
     watch,
     formState: { errors, isValid }
   } = useForm<FormData>({
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      fee: 2200
+    }
   })
 
   const theme = useTheme()
@@ -241,6 +244,24 @@ const AdvertisementForm = () => {
               />
               <ErrorMessage>
                 {getFormErrorMessage(errors.receiveAmount?.type)}
+              </ErrorMessage>
+            </FormControl>
+
+            {/* TODO: validate fee */}
+            <FormControl>
+              <Label>Fee (gwei)</Label>
+              <Input
+                {...register('fee', {
+                  required: true,
+                  validate: {
+                    positiveNumber: (v) => v > 0
+                  }
+                })}
+                placeholder="0.0"
+                error={!!errors.fee}
+              />
+              <ErrorMessage>
+                {getFormErrorMessage(errors.fee?.type)}
               </ErrorMessage>
             </FormControl>
 

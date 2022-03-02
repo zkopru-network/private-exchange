@@ -14,6 +14,7 @@ export type FormData = {
   advertiser: string // advertiser zkopru address
   amount: number // scaled amount to pay
   receiveAmount: number // scaled amount to receive (scale)
+  fee: number
 }
 
 export type AdvertiseParams = FormData & {
