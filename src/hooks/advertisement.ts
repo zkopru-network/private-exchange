@@ -14,6 +14,7 @@ export type FormData = {
   advertiser: string // advertiser zkopru address
   amount: number // scaled amount to pay
   receiveAmount: number // scaled amount to receive (scale)
+  fee: number
 }
 
 export type AdvertiseParams = FormData & {
@@ -44,6 +45,13 @@ export function usePostAdvertisement() {
     },
     []
   )
+}
+
+export function useDeleteAdvertisement() {
+  // TODO: authentication
+  return useCallback(async (id) => {
+    return await axios.delete(`${API_ROOT}/advertisement/${id}`)
+  }, [])
 }
 
 export function useAdvertisementsQuery() {

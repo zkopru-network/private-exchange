@@ -39,8 +39,12 @@ const Exchange = () => {
   } = useForm<{
     sendAmount: number
     receiveAmount: number
+    fee: number
   }>({
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      fee: 2200
+    }
   })
   const { active } = useWeb3React()
   const [submitting, setSubmitting] = useState(false)
@@ -51,7 +55,7 @@ const Exchange = () => {
   const swapMutation = useSwap()
   const tokensMapQuery = useTokensMap()
 
-  const runSMP = handleSubmit(async ({ sendAmount, receiveAmount }) => {
+  const runSMP = handleSubmit(async ({ sendAmount, receiveAmount, fee }) => {
     const advertisement = ad?.data
     if (!advertisement) {
       toast.error('Advertisement not loaded yet. Please retry later.')
@@ -95,6 +99,7 @@ const Exchange = () => {
           receiveToken,
           receiveAmount: receive,
           sendAmount: send,
+          fee: fee,
           salt: smpResult.salt
         })
         setSwapStatus(SwapStatus.TX_SUBMITTED)
@@ -222,6 +227,22 @@ const Exchange = () => {
           <ErrorMessage>
             {getFormErrorMessage(errors.sendAmount?.type)}
           </ErrorMessage>
+        </FormControl>
+
+        {/* TODO: validate fee */}
+        <FormControl>
+          <Label>Fee (gwei)</Label>
+          <Input
+            {...register('fee', {
+              required: true,
+              validate: {
+                positiveNumber: (v) => v > 0
+              }
+            })}
+            placeholder="0.0"
+            error={!!errors.fee}
+          />
+          <ErrorMessage>{getFormErrorMessage(errors.fee?.type)}</ErrorMessage>
         </FormControl>
 
         {!active ? (

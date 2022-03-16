@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers'
+import { parseUnits } from 'ethers/lib/utils'
 import { useMutation } from 'react-query'
 import useStore from '../store/zkopru'
 
@@ -8,6 +9,7 @@ type SwapParams = {
   sendAmount: BigNumber
   receiveAmount: BigNumber
   counterParty: string
+  fee: number
   salt: number
 }
 
@@ -19,7 +21,8 @@ export function useSwap() {
       receiveToken,
       receiveAmount,
       counterParty,
-      salt
+      salt,
+      fee
     }) => {
       console.log('Sending swap transaction...')
       const { zkAddress, wallet } = useStore.getState()
@@ -28,8 +31,7 @@ export function useSwap() {
       const { account } = wallet.wallet
       if (!account) throw new Error('zkAccount not set')
 
-      // const fee = await wallet.loadCurrentPrice()
-      const fee = '2060000000000'
+      const actualFee = parseUnits(fee.toString(), 'gwei').toString()
 
       try {
         const tx = await wallet.generateSwapTransaction(
@@ -38,7 +40,7 @@ export function useSwap() {
           sendAmount.toString(),
           receiveToken,
           receiveAmount.toString(),
-          fee,
+          actualFee,
           salt
         )
         const zkTx = await wallet.wallet.shieldTx({ tx })

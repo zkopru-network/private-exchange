@@ -115,6 +115,7 @@ export function useListenSmp() {
                 receiveToken: tokens[data.currency2].address,
                 receiveAmount: receive,
                 sendAmount: send,
+                fee: data.fee,
                 salt
               })
               toast.success('Successfully create swap transaction.')
