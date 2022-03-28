@@ -146,7 +146,7 @@ const AdvertisementForm = () => {
                       }),
                       option: (provided) => ({
                         ...provided,
-                        color: theme.onSecondary
+                        color: theme.onPrimary
                       })
                     }}
                     options={tokens.map((token) => ({
@@ -184,7 +184,7 @@ const AdvertisementForm = () => {
                       }),
                       option: (provided) => ({
                         ...provided,
-                        color: theme.onSecondary
+                        color: theme.onPrimary
                       })
                     }}
                     options={tokens.map((token) => ({

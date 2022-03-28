@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import { Link } from 'wouter'
 import { useWeb3React } from '@web3-react/core'
@@ -7,6 +6,9 @@ import ConnectWalletButton from './ConnectWalletButton'
 import { FONT_SIZE, SPACE, RADIUS } from '../constants'
 import { shortAddressString } from '../utils/string'
 import { useIsSupportedChain } from '../hooks/network'
+import LogoSrc from '../assets/logo.svg'
+import searchSrc from '../assets/search-line.svg'
+import createSrc from '../assets/pen.svg'
 
 const Header = () => {
   const { account, active } = useWeb3React()
@@ -16,25 +18,25 @@ const Header = () => {
   return (
     <>
       <HeaderContainer>
-        <Logo>PrivateExchange</Logo>
-        <div>
-          <HeaderLink href="/" selected={location === '/'}>
-            Home
+        <Link href="/">
+          <img src={LogoSrc} alt="logo" height="40px" />
+        </Link>
+        <HeaderRight>
+          <HeaderLink href="/list" selected={location === '/list'}>
+            <HeaderLinkImg src={searchSrc} alt="search" />
+            Search
           </HeaderLink>
           <HeaderLink href="/advertise" selected={location === '/advertise'}>
-            Advertise
+            <HeaderLinkImg src={createSrc} alt="create offer" />
+            Create offer
           </HeaderLink>
-          <HeaderLink href="/history" selected={location === '/history'}>
-            History
-          </HeaderLink>
-        </div>
-        <div>
+
           {active && account ? (
             <Account>{shortAddressString(account)}</Account>
           ) : (
             <ConnectWalletButton />
           )}
-        </div>
+        </HeaderRight>
       </HeaderContainer>
       {!supportedChain && <Notice>Current chain is not supported.</Notice>}
     </>
@@ -46,32 +48,36 @@ const HeaderContainer = styled.header`
   align-items: center;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.background};
-  border-bottom: 1px solid ${({ theme }) => theme.border};
   color: ${({ theme }) => theme.onBackground};
-  height: 60px;
+  height: 88px;
   padding: 0 20px;
 `
 
-const Logo = styled.span`
-  font-family: serif;
-  font-size: ${FONT_SIZE.M};
-  font-weight: 600;
-  color: ${({ theme }) => theme.onSurface};
+const HeaderRight = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 const HeaderLink = styled(Link)<{ selected?: boolean }>`
+  display: flex;
+  align-items: center;
   font-size: ${FONT_SIZE.M};
   font-weight: 600;
   margin-right: ${SPACE.M};
   border-radius: ${RADIUS.S};
   padding: ${SPACE.S};
+  padding-right: ${SPACE.M};
   ${({ selected, theme }) =>
     selected
       ? `
-  background-color: ${theme.surface2};
+  background-color: ${theme.surface};
   color: ${theme.onSurface};
   `
       : ''}
+`
+
+const HeaderLinkImg = styled.img`
+  margin-right: ${SPACE.S};
 `
 
 const Account = styled.span`
@@ -80,7 +86,7 @@ const Account = styled.span`
   font-size: ${FONT_SIZE.S};
   padding: ${SPACE.S} ${SPACE.M};
   margin-right: ${SPACE.M};
-  border-radius: ${RADIUS.L};
+  border-radius: 30px;
   border: solid 1px ${({ theme }) => theme.border};
 `
 

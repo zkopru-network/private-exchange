@@ -1,14 +1,13 @@
-import React from 'react'
 import styled from 'styled-components'
 import { Route, Switch } from 'wouter'
 import { Toaster } from 'react-hot-toast'
 import { useBeforeunload } from 'react-beforeunload'
 import Header from './components/Header'
+import Home from './pages/Home'
 import AdvertisementList from './pages/AdvertisementList'
 import AdvertisementForm from './pages/AdvertisementForm'
 import Exchange from './pages/Exchange'
 import History from './pages/History'
-import BalanceSection from './components/BalanceSection'
 import GlobalStyle from './styles/global'
 import { useEagerConnect } from './hooks/wallet'
 import { useStartSync } from './hooks/zkopru'
@@ -40,6 +39,9 @@ function App() {
         <BodyContainer>
           <Switch>
             <Route path="/">
+              <Home />
+            </Route>
+            <Route path="/list">
               <AdvertisementList />
             </Route>
             <Route path="/advertise">
@@ -56,16 +58,28 @@ function App() {
             </Route>
           </Switch>
         </BodyContainer>
-        <BalanceSection />
       </Container>
       <Toaster />
       <SMPPanel />
+      <div style={{ display: 'none' }}>
+        DEBUG
+        <button
+          onClick={async () => {
+            const client = useZkopruStore.getState().client
+            await client?.resetDB()
+            window.location.reload()
+          }}
+        >
+          clear db
+        </button>
+      </div>
     </>
   )
 }
 
 const Container = styled.div`
   display: flex;
+  justify-content: center;
 `
 
 const BodyContainer = styled.div`
