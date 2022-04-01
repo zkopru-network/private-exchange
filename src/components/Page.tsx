@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { RADIUS, SPACE } from '../constants'
+import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 
 export const PageContainer = styled.div`
   padding: ${SPACE.XL} ${SPACE.XXL};
@@ -7,14 +7,24 @@ export const PageContainer = styled.div`
 
 export const PageHead = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  margin-top: ${SPACE.L};
 `
 
 export const PageBody = styled.div`
-  background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
-  border: solid 1px ${({ theme }) => theme.border};
-  border-radius: ${RADIUS.M};
   padding: ${SPACE.M};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+export const Title = styled.h1`
+  font-size: ${FONT_SIZE.HUGE};
+  font-weight: 900;
+  color: ${({ theme }) => theme.textMain};
+  text-align: center;
+  line-height: 102px;
+  margin: 0;
 `

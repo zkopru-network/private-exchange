@@ -32,7 +32,7 @@ const Container = styled.div`
   border-radius: ${RADIUS.M};
 
   background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
+  color: ${({ theme }) => theme.textSub};
   border: solid 1px ${({ theme }) => theme.border};
 
   display: flex;

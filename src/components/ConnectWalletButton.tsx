@@ -22,7 +22,7 @@ const ConnectWalletButton = ({ text }: { text?: string }) => {
 
 const Button = styled(PrimaryButton)`
   background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
+  color: ${({ theme }) => theme.textSub};
 `
 
 export default ConnectWalletButton

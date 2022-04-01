@@ -48,7 +48,7 @@ const HeaderContainer = styled.header`
   align-items: center;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.onBackground};
+  color: ${({ theme }) => theme.textMain};
   height: 88px;
   padding: 0 20px;
 `
@@ -71,7 +71,7 @@ const HeaderLink = styled(Link)<{ selected?: boolean }>`
     selected
       ? `
   background-color: ${theme.surface};
-  color: ${theme.onSurface};
+  color: ${theme.textSub};
   `
       : ''}
 `
@@ -82,7 +82,7 @@ const HeaderLinkImg = styled.img`
 
 const Account = styled.span`
   background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
+  color: ${({ theme }) => theme.textSub};
   font-size: ${FONT_SIZE.S};
   padding: ${SPACE.S} ${SPACE.M};
   margin-right: ${SPACE.M};

@@ -36,7 +36,7 @@ const Container = styled.div`
   width: calc(30% - 10px);
   height: fit-content;
   background-color: ${({ theme }) => theme.surface};
-  color: ${({ theme }) => theme.onSurface};
+  color: ${({ theme }) => theme.textSub};
   border-radius: ${RADIUS.M};
   border: solid 1px ${({ theme }) => theme.border};
   padding: ${SPACE.M};

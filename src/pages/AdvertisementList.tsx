@@ -4,9 +4,8 @@ import { Link, useLocation } from 'wouter'
 import Fuse from 'fuse.js'
 import Modal from 'react-modal'
 import useZkopruStore from '../store/zkopru'
-import Title from '../components/Title'
 import PrimaryButton from '../components/PrimaryButton'
-import { PageContainer, PageBody, PageHead } from '../components/Page'
+import { PageContainer, PageBody, PageHead, Title } from '../components/Page'
 import { SPACE } from '../constants'
 import {
   useAdvertisementsQuery,
@@ -77,7 +76,7 @@ const AdvertisementList = () => {
       border: `2px solid ${theme.border}`,
       borderRadius: '8px',
       backgroundColor: theme.surface,
-      color: theme.onSurface,
+      color: theme.textSub,
       minWidth: '400px',
       minHeight: '300px',
       top: '50%',
@@ -92,7 +91,6 @@ const AdvertisementList = () => {
     <PageContainer>
       <PageHead>
         <Title>Advertisement List</Title>
-        <HeadLink href="/advertise">+ CREATE</HeadLink>
       </PageHead>
       <SearchSection>
         <Input
@@ -221,7 +219,7 @@ const Input = styled.input`
   background-color: ${({ theme }) => theme.surface};
   border: solid 1px ${({ theme }) => theme.border};
   border-radius: 20px;
-  color: ${({ theme }) => theme.onSurface};
+  color: ${({ theme }) => theme.textSub};
   height: 28px;
   padding: 2px 10px;
   padding-left: 28px;

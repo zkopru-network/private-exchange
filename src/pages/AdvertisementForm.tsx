@@ -12,9 +12,8 @@ import { useTokens } from '../hooks/tokens'
 import useZkopruStore from '../store/zkopru'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
-import Title from '../components/Title'
 import { Input, Label, ErrorMessage, FormControl } from '../components/Form'
-import { PageContainer, PageBody, PageHead } from '../components/Page'
+import { PageContainer, PageBody, PageHead, Title } from '../components/Page'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import AdvertisementEntity from '../db/Advertisement'
@@ -102,7 +101,7 @@ const AdvertisementForm = () => {
       border: `2px solid ${theme.border}`,
       borderRadius: '8px',
       backgroundColor: theme.surface,
-      color: theme.onSurface,
+      color: theme.textSub,
       minWidth: '400px',
       minHeight: '300px',
       top: '50%',
@@ -119,13 +118,13 @@ const AdvertisementForm = () => {
       <Body>
         <PageHead>
           <Title>Create Advertisement</Title>
-          <HeadLink
+          {/* <HeadLink
             onClick={() => {
               window.history.back()
             }}
           >
             &larr; Back
-          </HeadLink>
+          </HeadLink> */}
         </PageHead>
         <FormContainer>
           <form>

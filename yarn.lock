@@ -10016,6 +10016,16 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+mobx-react-lite@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/mobx-react-lite/-/mobx-react-lite-3.3.0.tgz#7174e807201943beff6f9d3701492314c9fc0db3"
+  integrity sha512-U/kMSFtV/bNVgY01FuiGWpRkaQVHozBq5CEBZltFvPt4FcV111hEWkgwqVg9GPPZSEuEdV438PEz8mk8mKpYlA==
+
+mobx@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-6.5.0.tgz#dc2d028b1882737f6e813fc92454381e438b7ad3"
+  integrity sha512-pHZ/cySF00FVENDWIDzJyoObFahK6Eg4d0papqm6d7yMkxWTZ/S/csqJX1A3PsYy4t5k3z2QnlwuCfMW5lSEwA==
+
 mock-fs@^4.1.0:
   version "4.14.0"
   resolved "https://registry.npmjs.org/mock-fs/-/mock-fs-4.14.0.tgz"
@@ -10153,6 +10163,11 @@ nanoassert@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/nanoassert/-/nanoassert-1.1.0.tgz"
   integrity sha1-TzFS4JVA/eKMdvRLGbvNHVpCR40=
+
+nanoether@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/nanoether/-/nanoether-0.0.8.tgz#cea0ceb708a994baa56f611161ed235d70a2b3fb"
+  integrity sha512-YRLqU4JG3P7Sq4gy8lxWfl21Wfkcgt9uxKp/otxExnqL1NE3emzQKRLDvNAxWs9Ih6HVFepfq76amytQNQQGvw==
 
 nanoid@^3.1.20:
   version "3.1.20"

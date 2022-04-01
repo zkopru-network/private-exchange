@@ -5,7 +5,6 @@ import toast from 'react-hot-toast'
 import { useWeb3React } from '@web3-react/core'
 import { useForm } from 'react-hook-form'
 import dayjs from 'dayjs'
-import Title from '../components/Title'
 import {
   Input,
   Label,
@@ -15,7 +14,7 @@ import {
 } from '../components/Form'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
-import { PageContainer, PageBody, PageHead } from '../components/Page'
+import { PageContainer, PageBody, PageHead, Title } from '../components/Page'
 import SwapModal, { SwapStatus } from '../components/SwapModal'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
 import useZkopruStore from '../store/zkopru'

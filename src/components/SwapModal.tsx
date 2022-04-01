@@ -30,7 +30,7 @@ const SwapModal = ({ swapStatus, onClose }: Props) => {
       border: `2px solid ${theme.border}`,
       borderRadius: '8px',
       backgroundColor: theme.surface,
-      color: theme.onSurface,
+      color: theme.textSub,
       minWidth: '400px',
       minHeight: '300px',
       top: '50%',

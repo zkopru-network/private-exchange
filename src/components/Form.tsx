@@ -23,7 +23,7 @@ export const Label = styled.label`
   display: block;
   font-size: ${FONT_SIZE.S};
   font-weight: 600;
-  color: ${({ theme }) => theme.onBackground};
+  color: ${({ theme }) => theme.textMain};
   margin-bottom: ${SPACE.XS};
 `
 

@@ -7,9 +7,9 @@ export type Theme = {
   warning: string
   disabled: string
   control: string
+  textMain: string
+  textSub: string
   onPrimary: string
-  onBackground: string
-  onSurface: string
   onError: string
   onWarning: string
   onDisabled: string
@@ -24,8 +24,10 @@ const theme: Theme = {
   border: '#FFFFFF',
   disabled: '#9EA3A7', // Gray 400
   control: '#e8dcff',
-  onBackground: '#FFFFFF',
-  onSurface: '#FFFFFF',
+  // Text
+  textMain: '#FFFFFF',
+  textSub: '#D0D1D2', // Gray300
+
   onError: '#FFFFFF',
   onWarning: '#FFFFFF',
   onPrimary: '#000000',

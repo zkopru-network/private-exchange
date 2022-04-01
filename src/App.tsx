@@ -1,7 +1,10 @@
+import { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import { Route, Switch } from 'wouter'
 import { Toaster } from 'react-hot-toast'
 import { useBeforeunload } from 'react-beforeunload'
+import UIContext from 'nanoether/interface'
+import 'nanoether/colors.css'
 import Header from './components/Header'
 import Home from './pages/Home'
 import AdvertisementList from './pages/AdvertisementList'
@@ -18,10 +21,14 @@ import SMPPanel from './components/SMPPanel'
 import useZkopruStore from './store/zkopru'
 
 function App() {
+  const uiContext: any = useContext(UIContext)
   const tried = useEagerConnect()
   const postPeerInfo = usePostPeerInfo()
   useStartSync()
   useStartLoadExistingAd()
+  useEffect(() => {
+    uiContext.setDarkmode(true)
+  }, [])
   useBeforeunload(async () => {
     const { zkAddress } = useZkopruStore.getState()
     if (zkAddress) {
@@ -36,28 +43,26 @@ function App() {
       <GlobalStyle />
       <Header />
       <Container>
-        <BodyContainer>
-          <Switch>
-            <Route path="/">
-              <Home />
-            </Route>
-            <Route path="/list">
-              <AdvertisementList />
-            </Route>
-            <Route path="/advertise">
-              <AdvertisementForm />
-            </Route>
-            <Route path="/exchange/:id">
-              <Exchange />
-            </Route>
-            <Route path="/history">
-              <History />
-            </Route>
-            <Route path="/:rest*">
-              {(params) => `404, page ${params.rest} does not exist!`}
-            </Route>
-          </Switch>
-        </BodyContainer>
+        <Switch>
+          <Route path="/">
+            <Home />
+          </Route>
+          <Route path="/list">
+            <AdvertisementList />
+          </Route>
+          <Route path="/advertise">
+            <AdvertisementForm />
+          </Route>
+          <Route path="/exchange/:id">
+            <Exchange />
+          </Route>
+          <Route path="/history">
+            <History />
+          </Route>
+          <Route path="/:rest*">
+            {(params) => `404, page ${params.rest} does not exist!`}
+          </Route>
+        </Switch>
       </Container>
       <Toaster />
       <SMPPanel />
@@ -80,10 +85,6 @@ function App() {
 const Container = styled.div`
   display: flex;
   justify-content: center;
-`
-
-const BodyContainer = styled.div`
-  width: 70%;
 `
 
 export default App

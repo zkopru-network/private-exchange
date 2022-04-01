@@ -3,9 +3,9 @@ import { FONT_SIZE } from '../constants'
 
 const GlobalStyle = createGlobalStyle`
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: ${FONT_SIZE.M};
-  color: ${({ theme }) => theme.onBackground};
+  color: ${({ theme }) => theme.textMain};
   margin: 0;
   min-width: 100vw;
   background-color: ${({ theme }) => theme.background}
