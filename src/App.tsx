@@ -60,6 +60,18 @@ function App() {
       </Container>
       <Toaster />
       <SMPPanel />
+      <div>
+        DEBUG
+        <button
+          onClick={async () => {
+            const client = useZkopruStore.getState().client
+            await client?.resetDB()
+            window.location.reload()
+          }}
+        >
+          clear db
+        </button>
+      </div>
     </>
   )
 }
