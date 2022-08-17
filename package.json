@@ -43,7 +43,7 @@
     "zustand": "^3.5.10"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3333 react-scripts start",
     "start:server": "ts-node src/server/index.ts",
     "build": "react-scripts build",
     "test": "react-scripts test",

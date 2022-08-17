@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useRoute } from 'wouter'
 import toast from 'react-hot-toast'
-import { useWeb3React } from '@web3-react/core'
 import { useForm } from 'react-hook-form'
 import dayjs from 'dayjs'
 import Title from '../components/Title'
@@ -18,15 +17,16 @@ import ConnectWalletButton from '../components/ConnectWalletButton'
 import { PageContainer, PageBody, PageHead } from '../components/Page'
 import SwapModal, { SwapStatus } from '../components/SwapModal'
 import { useAdvertisementQuery, Advertisement } from '../hooks/advertisement'
-import useZkopruStore from '../store/zkopru'
 import { useRunSmp } from '../hooks/smp'
 import { useSwap } from '../hooks/swap'
 import { FONT_SIZE, SPACE } from '../constants'
-import { toScaled, pow10, toUnscaled } from '../utils/bn'
+import { toScaled, pow10 } from '../utils/bn'
 import { shortAddressString } from '../utils/string'
 import HistoryEntity, { HistoryType } from '../db/History'
 import { getFormErrorMessage } from '../errorMessages'
 import { useTokensMap } from '../hooks/tokens'
+import { useBalance } from '../hooks/balance'
+import { useZkopru } from '../hooks/zkopruProvider'
 
 const Exchange = () => {
   // extract url params. always match path.
@@ -46,10 +46,10 @@ const Exchange = () => {
       fee: 2200
     }
   })
-  const { active } = useWeb3React()
+  const { active } = useZkopru()
   const [submitting, setSubmitting] = useState(false)
   const id: string = (params as any).id
-  const zkopruStore = useZkopruStore()
+  const balanceQuery = useBalance()
   const ad = useAdvertisementQuery(id)
   const smpMutation = useRunSmp()
   const swapMutation = useSwap()
@@ -93,7 +93,7 @@ const Exchange = () => {
       try {
         const receive = toScaled(smpResult.negotiatedAmount, receiveDecimals)
         const send = price.mul(receive).div(pow10(receiveDecimals))
-        const hash = await swapMutation.mutateAsync({
+        await swapMutation.mutateAsync({
           counterParty,
           sendToken,
           receiveToken,
@@ -102,18 +102,21 @@ const Exchange = () => {
           fee: fee,
           salt: smpResult.salt
         })
+
         setSwapStatus(SwapStatus.TX_SUBMITTED)
-        await HistoryEntity.save({
-          historyType: HistoryType.MatchMade,
-          timestamp: dayjs().unix(),
-          adId: Number(id),
-          currency1: sendTokenSymbol,
-          currency2: receiveTokenSymbol,
-          amount: toUnscaled(send, sendDecimals),
-          receiveAmount: toUnscaled(receive, receiveDecimals),
-          pending: true,
-          txHash: hash
-        })
+
+        // TODO: make history to open extension or block explorer
+        // await HistoryEntity.save({
+        //   historyType: HistoryType.MatchMade,
+        //   timestamp: dayjs().unix(),
+        //   adId: Number(id),
+        //   currency1: sendTokenSymbol,
+        //   currency2: receiveTokenSymbol,
+        //   amount: toUnscaled(send, sendDecimals),
+        //   receiveAmount: toUnscaled(receive, receiveDecimals),
+        //   pending: true,
+        //   txHash: hash
+        // })
       } catch (e) {
         setSwapStatus(SwapStatus.TX_FAIL)
       }
@@ -144,6 +147,7 @@ const Exchange = () => {
   }
 
   const advertisement: Advertisement = ad.data as any
+  const balanceData = balanceQuery.data
   const [currency1, currency2] = advertisement.pair.split('/')
 
   return (
@@ -213,11 +217,11 @@ const Exchange = () => {
                     : currency2
                   const balance =
                     currency === 'ETH'
-                      ? zkopruStore.balance
-                      : zkopruStore.tokenBalances[
+                      ? balanceData?.eth
+                      : balanceData?.tokenBalances[
                           advertisement.buyOrSell ? currency1 : currency2
                         ]
-                  return !!balance && balance >= v
+                  return balanceQuery.isFetched && !!balance && balance >= v
                 }
               }
             })}

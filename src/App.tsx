@@ -11,23 +11,21 @@ import History from './pages/History'
 import BalanceSection from './components/BalanceSection'
 import GlobalStyle from './styles/global'
 import { useEagerConnect } from './hooks/wallet'
-import { useStartSync } from './hooks/zkopru'
 import { usePostPeerInfo } from './hooks/peer'
 import { useStartLoadExistingAd } from './hooks/advertisement'
 import LoadingSpinner from './components/LoadingSpinner'
 import SMPPanel from './components/SMPPanel'
-import useZkopruStore from './store/zkopru'
+import { useZkopru } from './hooks/zkopruProvider'
 
 function App() {
   const tried = useEagerConnect()
   const postPeerInfo = usePostPeerInfo()
-  useStartSync()
+  const { account } = useZkopru()
   useStartLoadExistingAd()
   useBeforeunload(async () => {
-    const { zkAddress } = useZkopruStore.getState()
-    if (zkAddress) {
+    if (account) {
       // set peer status to offline
-      await postPeerInfo(zkAddress, false)
+      await postPeerInfo(account, false)
     }
   })
   if (!tried) return <LoadingSpinner />

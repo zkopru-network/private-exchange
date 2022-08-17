@@ -1,16 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Link } from 'wouter'
-import { useWeb3React } from '@web3-react/core'
 import { useLocation } from 'wouter'
 import ConnectWalletButton from './ConnectWalletButton'
 import { FONT_SIZE, SPACE, RADIUS } from '../constants'
 import { shortAddressString } from '../utils/string'
-import { useIsSupportedChain } from '../hooks/network'
+import { useZkopru } from '../hooks/zkopruProvider'
 
 const Header = () => {
-  const { account, active } = useWeb3React()
-  const supportedChain = useIsSupportedChain()
+  const { active, account } = useZkopru()
   const [location] = useLocation()
 
   return (
@@ -36,7 +34,6 @@ const Header = () => {
           )}
         </div>
       </HeaderContainer>
-      {!supportedChain && <Notice>Current chain is not supported.</Notice>}
     </>
   )
 }
@@ -82,13 +79,6 @@ const Account = styled.span`
   margin-right: ${SPACE.M};
   border-radius: ${RADIUS.L};
   border: solid 1px ${({ theme }) => theme.border};
-`
-
-const Notice = styled.div`
-  padding: ${SPACE.XS};
-  background-color: ${({ theme }) => theme.warning};
-  color: ${({ theme }) => theme.onWarning};
-  text-align: center;
 `
 
 export default Header

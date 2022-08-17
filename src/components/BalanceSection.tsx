@@ -1,31 +1,34 @@
 import React from 'react'
 import styled from 'styled-components'
-import useStore from '../store/zkopru'
 import { FONT_SIZE, RADIUS, SPACE } from '../constants'
+import { useBalance } from '../hooks/balance'
 
 const BalanceSection = () => {
-  const { tokenBalances, l2BalanceLoaded, balance } = useStore()
+  const balanceQuery = useBalance()
 
   return (
     <Container>
-      <Title>
-        L2 Balance
-        <DepositLink href="https://zkopru.network/wallet" target="_blank">
-          Deposit
-        </DepositLink>
-      </Title>
-      <Row>
-        <TokenLabel>ETH</TokenLabel>
-        <TokenBalance>{balance}</TokenBalance>
-      </Row>
-      {!l2BalanceLoaded
-        ? 'Loading...'
-        : Object.keys(tokenBalances).map((symbol) => (
+      <Title>L2 Balance</Title>
+      {balanceQuery.isLoading ? (
+        'Loading...'
+      ) : balanceQuery.data ? (
+        <>
+          <Row>
+            <TokenLabel>ETH</TokenLabel>
+            <TokenBalance>{balanceQuery.data.eth || '0'}</TokenBalance>
+          </Row>
+          {Object.keys(balanceQuery.data.tokenBalances).map((symbol) => (
             <Row key={symbol}>
               <TokenLabel>{symbol}</TokenLabel>
-              <TokenBalance>{tokenBalances[symbol]}</TokenBalance>
+              <TokenBalance>
+                {balanceQuery.data.tokenBalances[symbol] || 0}
+              </TokenBalance>
             </Row>
           ))}
+        </>
+      ) : (
+        <div>No data</div>
+      )}
     </Container>
   )
 }
@@ -45,12 +48,6 @@ const Container = styled.div`
 const Title = styled.h2`
   margin: ${SPACE.XS} 0;
   font-size: ${FONT_SIZE.M};
-`
-
-const DepositLink = styled.a`
-  float: right;
-  font-weight: normal;
-  text-decoration: underline;
 `
 
 const Row = styled.div`

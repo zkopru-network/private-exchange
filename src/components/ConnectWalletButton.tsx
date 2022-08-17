@@ -1,18 +1,21 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useWeb3React } from '@web3-react/core'
 
-import { injected } from '../connectors'
 import PrimaryButton from './PrimaryButton'
+import { useZkopru } from '../hooks/zkopruProvider'
 
 const ConnectWalletButton = ({ text }: { text?: string }) => {
-  const { activate } = useWeb3React()
+  const { zkopru } = useZkopru()
+
+  if (!zkopru) {
+    return <div>Install Extension</div>
+  }
 
   return (
     <Button
       type="button"
       onClick={() => {
-        activate(injected)
+        zkopru.connect()
       }}
     >
       {text ? text : 'Connect Wallet'}
