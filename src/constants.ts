@@ -36,5 +36,14 @@ const peerConfig = {
 }
 
 const API_ROOT = 'http://localhost:8008'
+const RPC_ROOT = 'http://127.0.0.1:8888'
 
-export { FONT_SIZE, SPACE, RADIUS, SupportedChainId, peerConfig, API_ROOT }
+export {
+  FONT_SIZE,
+  SPACE,
+  RADIUS,
+  SupportedChainId,
+  peerConfig,
+  API_ROOT,
+  RPC_ROOT
+}

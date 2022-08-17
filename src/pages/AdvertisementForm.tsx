@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import styled, { useTheme } from 'styled-components'
-import { useWeb3React } from '@web3-react/core'
 import { useForm, Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Select from 'react-select'
@@ -8,8 +7,8 @@ import Modal from 'react-modal'
 import dayjs from 'dayjs'
 import { usePostAdvertisement, FormData } from '../hooks/advertisement'
 import { useListenSmp } from '../hooks/smp'
-import { useTokens } from '../hooks/tokens'
-import useZkopruStore from '../store/zkopru'
+import { useRegisteredERC20s } from '../hooks/tokens'
+import { useZkopru } from '../hooks/zkopruProvider'
 import PrimaryButton from '../components/PrimaryButton'
 import ConnectWalletButton from '../components/ConnectWalletButton'
 import Title from '../components/Title'
@@ -19,6 +18,7 @@ import { FONT_SIZE, RADIUS, SPACE } from '../constants'
 import { getFormErrorMessage } from '../errorMessages'
 import AdvertisementEntity from '../db/Advertisement'
 import HistoryEntity, { HistoryType } from '../db/History'
+import { useBalance } from '../hooks/balance'
 
 const AdvertisementForm = () => {
   const [modalOpen, setModalOpen] = useState(false)
@@ -37,15 +37,16 @@ const AdvertisementForm = () => {
   })
 
   const theme = useTheme()
-  const tokensQuery = useTokens()
-  const { active } = useWeb3React()
-  const zkopruStore = useZkopruStore()
+  const tokensQuery = useRegisteredERC20s()
+  const { account, active } = useZkopru()
+  const balanceQuery = useBalance()
   const postAd = usePostAdvertisement()
   const listenSmp = useListenSmp()
   const fields = watch()
 
   const onSubmit = handleSubmit(async (data) => {
-    const zkAddress = useZkopruStore.getState().zkAddress as string
+    const zkAddress = account
+    if (!zkAddress) throw new Error('Account not loaded')
 
     try {
       setSubmitting(true)
@@ -94,6 +95,7 @@ const AdvertisementForm = () => {
     }
   })
   const tokens = tokensQuery.data || []
+  const balanceData = balanceQuery.data
   const customStyles = {
     overlay: {
       backgroundColor: 'rgba(255, 255, 255, 0.25)'
@@ -216,9 +218,9 @@ const AdvertisementForm = () => {
                     exceedBalance: (v) => {
                       const balance =
                         fields.currency1 === 'ETH'
-                          ? (zkopruStore.balance as number)
-                          : zkopruStore.tokenBalances[fields.currency1]
-                      return zkopruStore.l2BalanceLoaded && balance >= v
+                          ? balanceData?.eth
+                          : balanceData?.tokenBalances[fields.currency1]
+                      return balanceQuery.isFetched && !!balance && balance >= v
                     }
                   }
                 })}

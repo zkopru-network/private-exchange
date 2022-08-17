@@ -1,40 +1,47 @@
 import { ERC20Info } from '@zkopru/database'
 import { useQuery } from 'react-query'
-import useZkopruStore from '../store/zkopru'
+import { ethers } from 'ethers'
+import rpcClient from '../utils/rpcClient'
 
-export function useTokens() {
-  const state = useZkopruStore.getState()
+export const abi = [
+  'function balanceOf(address owner) view returns (uint256)',
+  'function decimals() view returns (uint8)',
+  'function symbol() view returns (string)',
+  'function allowance(address owner, address spender) view returns (uint256)',
+  'function approve(address spender, uint256 amount) returns (bool)'
+]
 
-  return useQuery(
-    ['tokens'],
-    async () => {
-      if (!state.client) throw new Error('client is not set')
-      const erc20Info = await state.client.node?.loadERC20Info()
-      if (!erc20Info)
-        return [
-          {
-            symbol: 'ETH',
-            decimals: 18,
-            address: '0x0000000000000000000000000000000000000000'
-          }
+export function useRegisteredERC20s() {
+  const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:5000')
+
+  return useQuery<ERC20Info[]>(['tokens'], async () => {
+    const res = await rpcClient.getRegisteredTokens()
+    if (!res.data) throw new Error('No data returned')
+    const tokens = res.data.result
+    const erc20s: ERC20Info[] = await Promise.all(
+      tokens.erc20s.map(async (address: string) => {
+        const contract = new ethers.Contract(address, abi, provider)
+        const [symbol, decimals] = [
+          await contract.symbol(),
+          await contract.decimals()
         ]
-      return [
-        {
-          symbol: 'ETH',
-          decimals: 18,
-          address: '0x0000000000000000000000000000000000000000'
-        },
-        ...erc20Info
-      ]
-    },
-    {
-      enabled: !!state.client
-    }
-  )
+        return { symbol, decimals, address }
+      })
+    )
+
+    return [
+      {
+        symbol: 'ETH',
+        decimals: 18,
+        address: '0x0000000000000000000000000000000000000000'
+      },
+      ...erc20s
+    ]
+  })
 }
 
 export function useTokensMap() {
-  const tokensQuery = useTokens()
+  const tokensQuery = useRegisteredERC20s()
   return {
     ...tokensQuery,
     data: tokensQuery.data?.reduce((acc, token) => {

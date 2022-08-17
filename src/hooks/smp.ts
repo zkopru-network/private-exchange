@@ -3,7 +3,7 @@ import { useMutation } from 'react-query'
 import SMPPeer from 'js-smp-peer2'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
-import useStore from '../store/zkopru'
+import { useZkopru } from './zkopruProvider'
 import usePeerStore, { PEER_STATUS } from '../store/peer'
 import { useSwap } from './swap'
 import { FormData, usePostAdvertisement } from './advertisement'
@@ -28,12 +28,11 @@ type SmpResult = {
 }
 
 export function useRunSmp() {
+  const peerId = useZkopru().account
   return useMutation<SmpResult, unknown, SMPParams>(
     async ({ price, counterpartyId, amount }) => {
-      const { zkAddress } = useStore.getState()
-      if (!zkAddress) throw new Error('zkopru client not initialized')
+      if (!peerId) throw new Error('zkopru client not initialized')
 
-      const peerId = zkAddress.toString()
       const peer = new SMPPeer(price, amount, peerId, peerConfig)
       await peer.connectToPeerServer()
 
@@ -52,14 +51,16 @@ export function useListenSmp() {
   const updateAdvertisement = usePostAdvertisement()
   const postPeerInfo = usePostPeerInfo()
   const tokensMapQuery = useTokensMap()
+  const { account } = useZkopru()
 
   const listen = useCallback(
     async (data: ListenParams) => {
       const tokens = tokensMapQuery.data
+      if (!account) throw new Error('Zkopru provider not loaded')
       if (!tokens) throw new Error('tokens not loaded')
       if (!tokens[data.currency1] || !tokens[data.currency2])
         throw new Error('Invalid token selected.')
-      const peerId = useStore.getState().zkAddress
+      const peerId = account
       const sendDecimals = tokens[data.currency1].decimals
       const receiveDecimals = tokens[data.currency2].decimals
       const scaledAmount = toScaled(data.amount, sendDecimals)
@@ -109,7 +110,7 @@ export function useListenSmp() {
             )
             // confirm
             try {
-              const hash = await swapMutation.mutateAsync({
+              await swapMutation.mutateAsync({
                 counterParty: remotePeerId,
                 sendToken: tokens[data.currency1].address,
                 receiveToken: tokens[data.currency2].address,
@@ -123,7 +124,6 @@ export function useListenSmp() {
               store.setPeer(null)
               store.setPeerStatus(PEER_STATUS.OFF)
 
-              // update pending to false when swap tx is included in zkopru
               await HistoryEntity.save({
                 ...data,
                 id: undefined,
@@ -132,8 +132,7 @@ export function useListenSmp() {
                 adId: data.id,
                 amount: toUnscaled(send, sendDecimals),
                 receiveAmount: toUnscaled(receive, receiveDecimals),
-                pending: true,
-                txHash: hash
+                pending: true
               })
 
               // rest amount: data.amount - send

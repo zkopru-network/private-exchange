@@ -7,11 +7,15 @@ import { useZkopru } from '../hooks/zkopruProvider'
 const ConnectWalletButton = ({ text }: { text?: string }) => {
   const { zkopru } = useZkopru()
 
+  if (!zkopru) {
+    return <div>Install Extension</div>
+  }
+
   return (
     <Button
       type="button"
       onClick={() => {
-        zkopru?.connect()
+        zkopru.connect()
       }}
     >
       {text ? text : 'Connect Wallet'}

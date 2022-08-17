@@ -3,7 +3,6 @@ import styled, { useTheme } from 'styled-components'
 import { Link, useLocation } from 'wouter'
 import Fuse from 'fuse.js'
 import Modal from 'react-modal'
-import useZkopruStore from '../store/zkopru'
 import Title from '../components/Title'
 import PrimaryButton from '../components/PrimaryButton'
 import { PageContainer, PageBody, PageHead } from '../components/Page'
@@ -17,6 +16,7 @@ import { useStopPeer } from '../hooks/peer'
 import { shortAddressString } from '../utils/string'
 import SearchIcon from '../assets/search_icon.svg'
 import { Trash2 } from 'react-feather'
+import { useZkopru } from '../hooks/zkopruProvider'
 
 const AdvertisementList = () => {
   const advertisementQuery = useAdvertisementsQuery()
@@ -27,8 +27,8 @@ const AdvertisementList = () => {
   const [fuse, setFuse] = useState<Fuse<Advertisement> | undefined>()
   const [searchWord, setSearchWord] = useState('')
   const stopPeer = useStopPeer()
-  const store = useZkopruStore()
   const theme = useTheme()
+  const { account } = useZkopru()
 
   useEffect(() => {
     // set fuse when advertisements loaded
@@ -48,14 +48,13 @@ const AdvertisementList = () => {
 
   const isOwner = useCallback(
     (advertiser: string) => {
-      console.log(store.zkAddress)
-      if (!store.zkAddress) {
+      if (!account) {
         return false
       }
 
-      return store.zkAddress === advertiser
+      return account === advertiser
     },
-    [store.zkAddress]
+    [account]
   )
 
   if (advertisementQuery.isLoading) {

@@ -104,5 +104,5 @@ export function useStartLoadExistingAd() {
     if (!peer && !loaded && tokensMap.data) {
       loadAds()
     }
-  }, [tokensMap])
+  }, [tokensMap, peer, loaded, listen])
 }

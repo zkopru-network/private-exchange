@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers'
 import { parseUnits } from 'ethers/lib/utils'
 import { useMutation } from 'react-query'
-import useStore from '../store/zkopru'
+import { useZkopru } from './zkopruProvider'
 
 type SwapParams = {
   sendToken: string // token address to send. ETH is Zero address.
@@ -14,7 +14,8 @@ type SwapParams = {
 }
 
 export function useSwap() {
-  return useMutation<string | undefined, unknown, SwapParams>(
+  const { zkopru, account } = useZkopru()
+  return useMutation<void, unknown, SwapParams>(
     async ({
       sendToken,
       sendAmount,
@@ -25,27 +26,19 @@ export function useSwap() {
       fee
     }) => {
       console.log('Sending swap transaction...')
-      const { zkAddress, wallet } = useStore.getState()
-      if (!zkAddress || !wallet)
-        throw new Error('zkopru client not initialized')
-      const { account } = wallet.wallet
-      if (!account) throw new Error('zkAccount not set')
+      if (!account || !zkopru) throw new Error('zkopru client not initialized')
 
       const actualFee = parseUnits(fee.toString(), 'gwei').toString()
-
       try {
-        const tx = await wallet.generateSwapTransaction(
-          counterParty,
+        zkopru.swap(
           sendToken,
           sendAmount.toString(),
           receiveToken,
           receiveAmount.toString(),
-          actualFee,
-          salt
+          counterParty,
+          salt,
+          actualFee.toString()
         )
-        const zkTx = await wallet.wallet.shieldTx({ tx })
-        await wallet.wallet.sendLayer2Tx(zkTx)
-        return zkTx.hash().toString()
       } catch (e) {
         console.error(e)
       }
